@@ -77,36 +77,50 @@ public class HeapHistoryItemsController : Controller
     // POST: HEAPHISTORYITEMS/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    //[HttpPost]
+    //[ValidateAntiForgeryToken]
+    //public async Task<IActionResult> Edit(int? id, [Bind("Id,SavedTime,HeapItem")] HeapHistoryItem heaphistoryitem)
+    //{
+    //    if (id != heaphistoryitem.Id)
+    //    {
+    //        return NotFound();
+    //    }
+
+    //    if (ModelState.IsValid)
+    //    {
+    //        try
+    //        {
+    //            _context.Update(heaphistoryitem);
+    //            await _context.SaveChangesAsync();
+    //        }
+    //        catch (DbUpdateConcurrencyException)
+    //        {
+    //            if (!HeapHistoryItemExists(heaphistoryitem.Id))
+    //            {
+    //                return NotFound();
+    //            }
+    //            else
+    //            {
+    //                throw;
+    //            }
+    //        }
+    //        return RedirectToAction(nameof(Index));
+    //    }
+    //    return View(heaphistoryitem);
+    //}
+
+    public class HeapHistoryItem
+    {
+        public string? Data { get; set; }
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,SavedTime,HeapItem")] HeapHistoryItem heaphistoryitem)
+    public IActionResult SaveHeap([FromBody] HeapHistoryItem heapHistoryItem)
     {
-        if (id != heaphistoryitem.Id)
-        {
-            return NotFound();
-        }
+        if (heapHistoryItem == null) return BadRequest("Invalid data");
 
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(heaphistoryitem);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!HeapHistoryItemExists(heaphistoryitem.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(heaphistoryitem);
+        return Json(new { success = true, message = $"Received {heapHistoryItem.Data}" });
     }
 
     // GET: HEAPHISTORYITEMS/Delete/5

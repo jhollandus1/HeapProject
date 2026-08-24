@@ -55,6 +55,12 @@ class ArrayHeap extends Observable {
         this.count = 0;
     }
 
+    GetHeapCopy() {
+        let copy = new Array(MaxNumberViewableElements);
+        this.DeepCopyArray(copy, this.heapArray);
+        return copy;
+    }
+
     GetNodeAtIndex(index) {
         return this.heapArray[index];
     }

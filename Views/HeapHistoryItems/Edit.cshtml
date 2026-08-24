@@ -4,6 +4,522 @@
     ViewData["Title"] = "Edit";
 }
 
+@Html.AntiForgeryToken()
+
+<script>
+    // global variables
+    let testFeature1b = true;    // everything for Add, RemoveMax, and BuildHeap
+    let testFeature2b = true;    // MVC notification,
+    let testFeature3a = true;    // things after add operation
+    let MaxNumberViewableElements = 15;
+    let durationOfAnimation = 1;
+    let MINIMUM_VALUE_DURATION = 0.01;
+    let lastMaxNode = null;
+</script>
+<script type="module">
+    import { HashTable } from '/js/heap/utility.js';
+    import { printLegendAndRectangles, HeapView, getIterationValue, delay } from '/js/heap/viewimplementation.js';
+    import { ArrayHeap, ArrayHeapNode } from '/js/heap/arrayheap.js';
+    import { SumVisitor } from '/js/heap/visitor.js';
+
+    let arrayHeap = new ArrayHeap();
+    let arrayView = new HeapView();
+    arrayHeap.AddView(arrayView);
+
+    const heapGlobalMap = new HashTable();
+
+
+    (function() {
+        let arrayHeap = new ArrayHeap();
+        let arrayView = new HeapView();
+        arrayHeap.AddView(arrayView);
+
+        function testArrayHeapAdd() {
+            let heap = new ArrayHeap();
+            heap.Add(1, "A");
+            let result = heap.GetHeapCopy();
+            Assert(result[0].key == 1);
+
+            heap.Add(2, "B");
+            result = heap.GetHeapCopy();
+            if (testFeature1b) {
+                console.log(result);
+            }
+            Assert(result[0].key == 2);
+            Assert(result[1].key == 1);
+
+            heap.Add(3, "C");
+            result = heap.GetHeapCopy();
+            if (testFeature1b) {
+                console.log(result);
+            }
+            Assert(result[0].key == 3);
+            Assert(result[1].key == 1);
+            Assert(result[2].key == 2);
+
+            heap.Add(4, "D");
+            result = heap.GetHeapCopy();
+            if (testFeature1b) {
+                console.log(result);
+            }
+            Assert(result[0].key == 4);
+            Assert(result[1].key == 3);
+            Assert(result[2].key == 2);
+            Assert(result[3].key == 1);
+
+            heap.Add(5, "E");
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 5);
+            Assert(result[1].key == 4);
+            Assert(result[2].key == 2);
+            Assert(result[3].key == 1);
+            Assert(result[4].key == 3);
+
+            heap.Add(6, "F");
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 6);
+            Assert(result[1].key == 4);
+            Assert(result[2].key == 5);
+            Assert(result[3].key == 1);
+            Assert(result[4].key == 3);
+            Assert(result[5].key == 2);
+
+            heap.Add(7, "G");
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 7);
+            Assert(result[1].key == 4);
+            Assert(result[2].key == 6);
+            Assert(result[3].key == 1);
+            Assert(result[4].key == 3);
+            Assert(result[5].key == 2);
+            Assert(result[6].key == 5);
+
+            heap.Add(8, "H");
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 8);
+            Assert(result[1].key == 7);
+            Assert(result[2].key == 6);
+            Assert(result[3].key == 4);
+            Assert(result[4].key == 3);
+            Assert(result[5].key == 2);
+            Assert(result[6].key == 5);
+            Assert(result[7].key == 1);
+
+            heap.Add(9, "I");
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 9);
+            Assert(result[1].key == 8);
+            Assert(result[2].key == 6);
+            Assert(result[3].key == 7);
+            Assert(result[4].key == 3);
+            Assert(result[5].key == 2);
+            Assert(result[6].key == 5);
+            Assert(result[7].key == 1);
+            Assert(result[8].key == 4);
+
+            heap.Add(10, "J");
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 10);
+            Assert(result[1].key == 9);
+            Assert(result[2].key == 6);
+            Assert(result[3].key == 7);
+            Assert(result[4].key == 8);
+            Assert(result[5].key == 2);
+            Assert(result[6].key == 5);
+            Assert(result[7].key == 1);
+            Assert(result[8].key == 4);
+            Assert(result[9].key == 3);
+
+            heap.Add(11, "K");
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 11);
+            Assert(result[1].key == 10);
+            Assert(result[2].key == 6);
+            Assert(result[3].key == 7);
+            Assert(result[4].key == 9);
+            Assert(result[5].key == 2);
+            Assert(result[6].key == 5);
+            Assert(result[7].key == 1);
+            Assert(result[8].key == 4);
+            Assert(result[9].key == 3);
+            Assert(result[10].key == 8);
+
+            heap.Add(12, "L");
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 12);
+            Assert(result[1].key == 10);
+            Assert(result[2].key == 11);
+            Assert(result[3].key == 7);
+            Assert(result[4].key == 9);
+            Assert(result[5].key == 6);
+            Assert(result[6].key == 5);
+            Assert(result[7].key == 1);
+            Assert(result[8].key == 4);
+            Assert(result[9].key == 3);
+            Assert(result[10].key == 8);
+            Assert(result[11].key == 2);
+
+            heap.Add(13, "M");
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 13);
+            Assert(result[1].key == 10);
+            Assert(result[2].key == 12);
+            Assert(result[3].key == 7);
+            Assert(result[4].key == 9);
+            Assert(result[5].key == 11);
+            Assert(result[6].key == 5);
+            Assert(result[7].key == 1);
+            Assert(result[8].key == 4);
+            Assert(result[9].key == 3);
+            Assert(result[10].key == 8);
+            Assert(result[11].key == 2);
+            Assert(result[12].key == 6);
+
+            heap.Add(14, "N");
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 14);
+            Assert(result[1].key == 10);
+            Assert(result[2].key == 13);
+            Assert(result[3].key == 7);
+            Assert(result[4].key == 9);
+            Assert(result[5].key == 11);
+            Assert(result[6].key == 12);
+            Assert(result[7].key == 1);
+            Assert(result[8].key == 4);
+            Assert(result[9].key == 3);
+            Assert(result[10].key == 8);
+            Assert(result[11].key == 2);
+            Assert(result[12].key == 6);
+            Assert(result[13].key == 5);
+
+            heap.Add(15, "O");
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 15);
+            Assert(result[1].key == 10);
+            Assert(result[2].key == 14);
+            Assert(result[3].key == 7);
+            Assert(result[4].key == 9);
+            Assert(result[5].key == 11);
+            Assert(result[6].key == 13);
+            Assert(result[7].key == 1);
+            Assert(result[8].key == 4);
+            Assert(result[9].key == 3);
+            Assert(result[10].key == 8);
+            Assert(result[11].key == 2);
+            Assert(result[12].key == 6);
+            Assert(result[13].key == 5);
+            Assert(result[14].key == 12);
+        }
+
+        function testArrayHeapRemoveMax() {
+            let heap = new ArrayHeap();
+            heap.Add(1, "A");
+            heap.Add(2, "B");
+            heap.Add(3, "C");
+            heap.Add(4, "D");
+            heap.Add(5, "E");
+            heap.Add(6, "F");
+            heap.Add(7, "G");
+            heap.Add(8, "H");
+            heap.Add(9, "I");
+            heap.Add(10, "J");
+            heap.Add(11, "K");
+            heap.Add(12, "L");
+            heap.Add(13, "M");
+            heap.Add(14, "N");
+            heap.Add(15, "O");
+
+            let max = heap.RemoveMax();
+            Assert(max.key == 15);
+            let result = heap.GetHeapCopy();
+            Assert(result[0].key == 14);
+            Assert(result[1].key == 10);
+            Assert(result[2].key == 13);
+            Assert(result[3].key == 7);
+            Assert(result[4].key == 9);
+            Assert(result[5].key == 11);
+            Assert(result[6].key == 12);
+            Assert(result[7].key == 1);
+            Assert(result[8].key == 4);
+            Assert(result[9].key == 3);
+            Assert(result[10].key == 8);
+            Assert(result[11].key == 2);
+            Assert(result[12].key == 6);
+            Assert(result[13].key == 5);
+
+            max = heap.RemoveMax();
+            Assert(max.key == 14);
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 13);
+            Assert(result[1].key == 10);
+            Assert(result[2].key == 12);
+            Assert(result[3].key == 7);
+            Assert(result[4].key == 9);
+            Assert(result[5].key == 11);
+            Assert(result[6].key == 5);
+            Assert(result[7].key == 1);
+            Assert(result[8].key == 4);
+            Assert(result[9].key == 3);
+            Assert(result[10].key == 8);
+            Assert(result[11].key == 2);
+            Assert(result[12].key == 6);
+
+            max = heap.RemoveMax();
+            Assert(max.key == 13);
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 12);
+            Assert(result[1].key == 10);
+            Assert(result[2].key == 11);
+            Assert(result[3].key == 7);
+            Assert(result[4].key == 9);
+            Assert(result[5].key == 6);
+            Assert(result[6].key == 5);
+            Assert(result[7].key == 1);
+            Assert(result[8].key == 4);
+            Assert(result[9].key == 3);
+            Assert(result[10].key == 8);
+            Assert(result[11].key == 2);
+
+            max = heap.RemoveMax();
+            Assert(max.key == 12);
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 11);
+            Assert(result[1].key == 10);
+            Assert(result[2].key == 6);
+            Assert(result[3].key == 7);
+            Assert(result[4].key == 9);
+            Assert(result[5].key == 2);
+            Assert(result[6].key == 5);
+            Assert(result[7].key == 1);
+            Assert(result[8].key == 4);
+            Assert(result[9].key == 3);
+            Assert(result[10].key == 8);
+
+            max = heap.RemoveMax();
+            Assert(max.key == 11);
+            result = heap.GetHeapCopy();
+            Assert(result[0].key == 10);
+            Assert(result[1].key == 9);
+            Assert(result[2].key == 6);
+            Assert(result[3].key == 7);
+            Assert(result[4].key == 8);
+            Assert(result[5].key == 2);
+            Assert(result[6].key == 5);
+            Assert(result[7].key == 1);
+            Assert(result[8].key == 4);
+            Assert(result[9].key == 3);
+        }
+
+        function testBuildHeap() {
+            let arr = [];
+            arr.push(new ArrayHeapNode(1, "A"));
+            arr.push(new ArrayHeapNode(2, "B"));
+            arr.push(new ArrayHeapNode(3, "C"));
+            arr.push(new ArrayHeapNode(4, "D"));
+            arr.push(new ArrayHeapNode(5, "E"));
+            arr.push(new ArrayHeapNode(6, "F"));
+            arr.push(new ArrayHeapNode(7, "G"));
+            arr.push(new ArrayHeapNode(8, "H"));
+            arr.push(new ArrayHeapNode(9, "I"));
+            arr.push(new ArrayHeapNode(10, "J"));
+            arr.push(new ArrayHeapNode(11, "K"));
+            arr.push(new ArrayHeapNode(12, "L"));
+            arr.push(new ArrayHeapNode(13, "M"));
+            arr.push(new ArrayHeapNode(14, "N"));
+            arr.push(new ArrayHeapNode(15, "O"));
+            //arr.push(16);
+
+            let heap = new ArrayHeap();
+            heap.BuildHeap(arr);
+            let result = heap.GetHeapCopy();
+            Assert(result[0].key == 15);
+            Assert(result[1].key == 11);
+            Assert(result[2].key == 14);
+            Assert(result[3].key == 9);
+            Assert(result[4].key == 10);
+            Assert(result[5].key == 13);
+            Assert(result[6].key == 7);
+            Assert(result[7].key == 8);
+            Assert(result[8].key == 4);
+            Assert(result[9].key == 2);
+            Assert(result[10].key == 5);
+            Assert(result[11].key == 12);
+            Assert(result[12].key == 6);
+            Assert(result[13].key == 3);
+            Assert(result[14].key == 1);
+        }
+
+        function testViewNotification() {
+            let heap = new ArrayHeap();
+            let view = new HeapView();
+            heap.AddView(view);
+            heap.Add(1, "A");
+            heap.Add(2, "B");
+            //    heap.Add(3, "C");
+            //    heap.Add(4, "D");
+            //    heap.Add(5, "E");
+            //    heap.Add(6, "F");
+            //    heap.Add(7, "G");
+            //    heap.Add(8, "H");
+            //    heap.Add(9, "I");
+            //    heap.Add(10, "J");
+            //    heap.Add(11, "K");
+            //    heap.Add(12, "L");
+            //    heap.Add(13, "M");
+            //    heap.Add(14, "N");
+            //    heap.Add(15, "O");
+        }
+
+        printLegendAndRectangles();
+        //testArrayHeapAdd();
+        //testArrayHeapRemoveMax();
+        //testBuildHeap();
+        //testViewNotification();
+    })();
+
+    function AddItemToHeap() {
+        const keyValue = document.getElementById('keyValue').value;
+        const valueValue = document.getElementById('valuePayload').value;
+        AddItemToHeapImpl(keyValue, valueValue);
+    }
+
+    function AddItemToHeapImpl(keyValue, valueValue) {
+        let keyValueAsInt = Number.parseInt(keyValue);
+
+        if (!Number.isInteger(keyValueAsInt) || keyValueAsInt < 1) {
+            alert("key must be an integer greater than or equal to 1");
+            return;
+        }
+        if (!heapGlobalMap.has(keyValueAsInt) && heapGlobalMap.size() + 1 <= 15) {
+            heapGlobalMap.set(keyValueAsInt, valueValue);
+            arrayHeap.Add(keyValueAsInt, valueValue);
+            localStorage.setItem("lastAddedKey" + keyValueAsInt, new Date().toLocaleString() + " " + keyValueAsInt + " " + valueValue);
+            //localStorage.setItem(getIterationValue)
+        }
+        else if (heapGlobalMap.size() === MaxNumberViewableElements) {
+            alert("Size limit reached for graphical display of max heap");
+        }
+        else {
+            alert("Duplicates not allowed in this max heap.");
+            return;
+        }
+    }
+
+    function GetSum() {
+        let visitor = new SumVisitor();
+        let size = arrayHeap.Size();
+        for (let i = 0; i < size; i++) {
+            let node = arrayHeap.GetNodeAtIndex(i);
+            node.Accept(visitor);
+        }
+        alert("The sum of the nodes is: " + visitor.GetSum());
+    }
+
+    function RemoveMax() {
+        // remove the key from the hashtable and save it
+        // take the last node in the heap and put it in topmost position
+        // sift down
+
+        // display the node that was removed in an alert box when the animation completes - or maybe in a new "results" box
+        let removedElement = null;
+        if (heapGlobalMap.size() > 0) {
+            removedElement = arrayHeap.RemoveMax();
+            heapGlobalMap.remove(removedElement.key);
+            localStorage.setItem("lastRemovedKey" + removedElement.key, new Date().toLocaleString() + " " + removedElement.key);
+            //alert(removedElement.key);
+        }
+        else {
+            alert("No more elements in the max heap.")
+        }
+    }
+
+    async function BulkLoad() {
+        let bulkLoadArray1 = [[89, "89value"],
+        [77, "77value"], [88, "88value"],
+        [11, "11value"], [16, "16value"], [7, "7value"], [15, "15value"],
+        [6, "6value"], [9, "9value"], [8, "8value"], [13, "13value"], [3, "3value"], [4, "4value"], [12, "12value"], [14, "14value"]];
+
+        let bulkLoadArray2 = [[3, "3value"],
+        [4, "4value"], [6, "6value"],
+        [7, "7value"], [8, "8value"], [9, "9value"], [11, "11value"],
+        [12, "12value"], [13, "13value"], [14, "14value"], [15, "15value"], [16, "16value"], [77, "77value"], [88, "88value"], [89, "89value"]];
+
+        let bulkLoadArray3 = [[89, "89value"],
+        [77, "77value"], [88, "88value"],
+        [11, "11value"], [16, "16value"], [15, "15value"], [7, "7value"],
+        [6, "6value"], [9, "9value"], [8, "8value"], [13, "13value"], [12, "12value"], [14, "14value"], [3, "3value"], [4, "4value"]];
+
+        let bulkLoadArray4 = [[89, "89value"],
+        [77, "77value"], [88, "88value"],
+        [11, "11value"], [16, "16value"], [7, "7value"], [15, "15value"]];
+
+        let current = bulkLoadArray4;
+
+        if (document.getElementById('maxVar' + lastMaxNode) !== null) {
+            document.getElementById('maxVar' + lastMaxNode).remove();
+        }
+
+        const slider = document.querySelector('input[type="range"]');
+        slider.value = MINIMUM_VALUE_DURATION;
+        durationOfAnimation = MINIMUM_VALUE_DURATION;
+        const syntheticEvent = new Event('input', { bubbles: true });
+        slider.dispatchEvent(syntheticEvent);
+
+        for (let i = 0; i < current.length; i++) {
+            AddItemToHeapImpl(current[i][0], current[i][1]);
+            await delay(2000);  // we will have slightly more than 500 ms of animation time at minimum * 3, so need to wait 2s total, else two visual bugs (13 and 11 switched, one missing) with only 1000ms
+        }
+    }
+
+    function SaveHeapToDatabase() {
+        let heapArray = arrayHeap;
+        let heapHistoryItem = {            
+            Data: JSON.stringify(heapArray)
+        };
+        fetch('/HeapHistoryItems/SaveHeap', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify(heapHistoryItem)
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Heap saved successfully!');
+                } else {
+                    alert('Error saving heap, with a response.');
+                }
+                return response.json();
+            })
+            .then(data => console.log(data))
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving heap, in catch block.');
+            });
+    }
+
+    function Assert(condition) {
+        if (condition == true) {
+            console.log(condition + " passed");
+        }
+        else {
+            console.log(condition + " failed");
+        }
+    }
+
+    document.getElementById("addKeyValue").addEventListener("click", AddItemToHeap);
+    document.getElementById("getSum").addEventListener("click", GetSum);
+    document.getElementById("removeMax").addEventListener("click", RemoveMax);
+
+    document.getElementById("animationDurationId").value = durationOfAnimation;
+    document.getElementById("animationDurationId").addEventListener("input", (event) => {
+        durationOfAnimation = event.target.value;
+    });
+    document.getElementById("addBulk").addEventListener("click", BulkLoad);
+    document.getElementById("saveHeap").addEventListener("click", SaveHeapToDatabase);
+</script>
+
 <h1>Edit</h1>
 
 <h4>HeapHistoryItem</h4>
@@ -27,6 +543,26 @@
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
+    </div>
+</div>
+
+<div>
+    <div>
+        <br />
+        <br />
+        <button id="addKeyValue">Add node</button>
+        <input type="text" id="keyValue" value="Enter Key" />
+        <input type="text" id="valuePayload" value="Payload">
+        <br />
+        <button id="getSum">Get sum of key values</button>
+        <br />
+        <button id="removeMax">Remove Max</button>
+        <br />
+        Animation speed: <input type="range" id="animationDurationId" min="0.01" max="2.0" step="0.1"/>
+        <br />
+        <br />
+        <button id="addBulk">Add bulk array</button>
+        <button id="saveHeap">Save</button>
     </div>
 </div>
 
