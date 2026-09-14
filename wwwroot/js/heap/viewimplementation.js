@@ -1,5 +1,5 @@
-import { HashTable, fixParentReference} from './utility.js';
-import { ArrayHeapNode, HeapItem } from './arrayheap.js';
+import { HashTable, fixParentReference } from './utility.js';
+import { ArrayHeapNode, HeapItem, GetMode, USER_INPUT, RESTORE_FROM_DB, BULK_LOAD_METHOD, ADD_OR_REMOVE } from './arrayheap.js';
 export { HeapView, getIterationValue, HeapEvent, exchangeUnderlyingValues, printLegendAndRectangles, delay }; 
 // JavaScript source code
 
@@ -296,7 +296,7 @@ function getIterationValue() {
 
 // iteration is accurate up to 2^53 - 1, so we can safely assume that we have enough integers for anything that the user wants with a 15-element heap - see this for some related details (https://github.com/processing/p5.js/wiki/JavaScript-basics#data-type-number)
 // this also covers other increasing usages of integers, elsewhere
-async function appendNewTreeNode(treeNode, index, heapArrayParams, heapArrayCopyForView, updateModelCallback, heapArray, updateSiblingNode, AddNodeToTracking, stackOfTxtNodes) {
+async function appendNewTreeNode(treeNode, index, heapArrayParams, heapArrayCopyForView, updateModelCallback, heapArray, updateSiblingNode, AddNodeToTracking, stackOfTxtNodes, mode) {
     console.log("treeNode.path is: " + treeNode.path);    
     const treeNodeGroup = d3.select('#mysvg')
         .append('g')
@@ -406,11 +406,10 @@ async function appendNewTreeNode(treeNode, index, heapArrayParams, heapArrayCopy
         console.log(heapArrayCopyForView[heapArrayParams[1]]);
 
         for (let i = 0; i < heapArrayParams.length; i+=2) {
-            // need to delay for 3 x durationOfAnimation + 500 ms (500 ms not strictly necessary - for user's benefit), every loop cycle, in parallel with exchangeValues
+            // need to delay for 3 x durationOfAnimation + 500 ms (500 ms is necessary - else temp variable box gets messed up), every loop cycle, in parallel with exchangeValues
             exchangeValues(heapArrayCopyForView[heapArrayParams[i]], heapArrayCopyForView[heapArrayParams[i + 1]],
                 updateSiblingNode, heapArrayParams[i], heapArrayCopyForView, stackOfTxtNodes);
-            
-            await delay((3 * durationOfAnimation * 1000) + 500);           
+            await delay((3 * durationOfAnimation * 1000) + GetMode(mode, ADD_OR_REMOVE)); // 500);           
         }
 
         console.log("HEAPARRAY after filterup: ");
@@ -622,11 +621,11 @@ async function removeTreeNode(maxNode, totalCount, heapArrayParams, heapArrayCop
     // filter down - must begin the max node and last-node-to-top operations before we can filter down
     if (heapArrayParams.length > 0) {
         for (let i = 0; i < heapArrayParams.length; i += 2) {                                                                                   // next parameter down
-            if (i === 0) {
+            if (i === 0) {      // NW in terms of lookup function
                 await delay(2 * durationOfAnimation * 1000);        // wait for the max node to be moved to the max variable box, then wait for the last node to be moved to the top of the heap
             }
             exchangeValuesFilterDown(heapArrayCopyForView[heapArrayParams[i]], heapArrayCopyForView[heapArrayParams[i + 1]], updateSiblingNode, heapArrayParams[i], heapArrayParams[i + 1], heapArrayCopyForView, stackOfTxtNodes, iteration);
-            await delay((3 * durationOfAnimation * 1000) + 500);        
+            await delay((3 * durationOfAnimation * 1000) + GetMode(USER_INPUT, ADD_OR_REMOVE)); // 500       
         }
 
         // if the last index of the filter down does not go all the way to the bottom of the heap, then we need to fix
@@ -769,7 +768,7 @@ function exchangeValues(treeNode, treeNode2, updateSiblingNode, childIndex, heap
 
         //const textNode2 = document.getElementById('txtElemId' + 11);
         //textNode2.textContent = treeNode2.key;                
-        const childItemNodeNum = stackOfTxtNodes.GetElementAt(childIndex);  
+        const childItemNodeNum = stackOfTxtNodes[childIndex];  
         const textNode = document.getElementById('txtElemId' + childItemNodeNum);     // retrieve old text id and overwrite
         textNode.textContent = treeNode2.key;
     });
@@ -820,7 +819,7 @@ function exchangeValues(treeNode, treeNode2, updateSiblingNode, childIndex, heap
         }
 
         let parentIndex = Math.trunc((childIndex - 1) / 2);
-        const parentItemNodeNum = stackOfTxtNodes.GetElementAt(parentIndex);
+        const parentItemNodeNum = stackOfTxtNodes[parentIndex];
         const textNode = document.getElementById('txtElemId' + parentItemNodeNum);
         textNode.textContent = animationText.textContent //document.getElementById('tempVarText').textContent;
         if (testFeature2) {
@@ -983,7 +982,7 @@ function exchangeValuesFilterDown(treeNode, treeNode2, updateSiblingNode, parent
 
         //const textNode2 = document.getElementById('txtElemId' + 11);
         //textNode2.textContent = treeNode2.key;                
-        const parentItemNodeNum = stackOfTxtNodes.GetElementAt(parentIndex);
+        const parentItemNodeNum = stackOfTxtNodes[parentIndex];
         const textNode = document.getElementById('txtElemId' + parentItemNodeNum);     // retrieve old text id and overwrite
         textNode.textContent = treeNode2.key;
     });
@@ -1033,7 +1032,7 @@ function exchangeValuesFilterDown(treeNode, treeNode2, updateSiblingNode, parent
             console.log("treeNode2.key:" + treeNode2.key);
         }
 
-        const childItemNodeNum = stackOfTxtNodes.GetElementAt(childIndex);
+        const childItemNodeNum = stackOfTxtNodes[childIndex];
         const textNode = document.getElementById('txtElemId' + childItemNodeNum);
         textNode.textContent = tempKey; //document.getElementById('tempVarText').textContent;
         if (testFeature2) {
@@ -1248,7 +1247,7 @@ function printLegendAndRectangles() {
 
 
 class HeapEvent {
-    constructor(eventType, eventData, eventTotalCountPreUpdate, eventParams, heapArrayCopyForView, callback, heapArray, callbackForTxtNodePrimaryOperation, callbackForTxtNodeRemoval, stackOfTxtNodes) {
+    constructor(eventType, eventData, eventTotalCountPreUpdate, eventParams, heapArrayCopyForView, callback, heapArray, callbackForTxtNodePrimaryOperation, callbackForTxtNodeRemoval, stackOfTxtNodes, mode) {
         this.eventType = eventType;
         this.eventData = eventData;
         this.eventTotalCountPreUpdate = eventTotalCountPreUpdate;
@@ -1259,6 +1258,7 @@ class HeapEvent {
         this.callbackForTxtNodePrimaryOperation = callbackForTxtNodePrimaryOperation;   // add or get
         this.callbackForTxtNodeRemoval = callbackForTxtNodeRemoval;
         this.stackOfTxtNodes = stackOfTxtNodes;
+        this.mode = mode;
     }
 }
 
@@ -1269,6 +1269,7 @@ class Observer {
     }
 }
 
+// this is stateless, but there could be multiple views
 class HeapView extends Observer {
     constructor() {
         super();
@@ -1326,7 +1327,7 @@ class HeapView extends Observer {
                     }
                 }
 
-                appendNewTreeNode(node, heapEvent.eventTotalCountPreUpdate, heapEvent.eventParams, heapEvent.heapArrayCopyForView, heapEvent.callback, heapEvent.heapArray, fixParentReference, heapEvent.callbackForTxtNodePrimaryOperation, heapEvent.stackOfTxtNodes);
+                appendNewTreeNode(node, heapEvent.eventTotalCountPreUpdate, heapEvent.eventParams, heapEvent.heapArrayCopyForView, heapEvent.callback, heapEvent.heapArray, fixParentReference, heapEvent.callbackForTxtNodePrimaryOperation, heapEvent.stackOfTxtNodes, heapEvent.mode);
                 break;
 
             case "removeMax":
@@ -1335,6 +1336,7 @@ class HeapView extends Observer {
                 nodeToRemove.cx = heapEvent.eventData.cx;
                 nodeToRemove.cy = heapEvent.eventData.cy;
 
+                // no need to pass mode here, since it is hard-coded to USER_INPUT 
                 removeTreeNode(nodeToRemove, heapEvent.eventTotalCountPreUpdate, heapEvent.eventParams, heapEvent.heapArrayCopyForView, heapEvent.callback, heapEvent.heapArray, fixParentReference, heapEvent.callbackForTxtNodePrimaryOperation, heapEvent.callbackForTxtNodeRemoval, heapEvent.stackOfTxtNodes);
                 break;
 
