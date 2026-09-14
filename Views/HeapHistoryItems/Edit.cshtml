@@ -4,22 +4,24 @@
     ViewData["Title"] = "Edit";
 }
 
-@Html.AntiForgeryToken()
+@* @Html.AntiForgeryToken() *@
 
 <script>
     // global variables
     let testFeature1b = true;    // everything for Add, RemoveMax, and BuildHeap
     let testFeature2b = true;    // MVC notification,
     let testFeature3a = true;    // things after add operation
-    let MaxNumberViewableElements = 15;
+    let testFeatureDB = true;        // save/restore from DB operations
+    const MaxNumberViewableElements = 15;
     let durationOfAnimation = 1;
-    let MINIMUM_VALUE_DURATION = 0.01;
+    const MINIMUM_VALUE_DURATION = 0.01;
+    const MIDPOINT_VALUE_DURATION = 1;
     let lastMaxNode = null;
 </script>
 <script type="module">
     import { HashTable } from '/js/heap/utility.js';
     import { printLegendAndRectangles, HeapView, getIterationValue, delay } from '/js/heap/viewimplementation.js';
-    import { ArrayHeap, ArrayHeapNode } from '/js/heap/arrayheap.js';
+    import { ArrayHeap, ArrayHeapNode, GetMode, USER_INPUT, BULK_LOAD_METHOD, ADD_OR_REMOVE, RESTORE_FROM_DB } from '/js/heap/arrayheap.js';
     import { SumVisitor } from '/js/heap/visitor.js';
 
     let arrayHeap = new ArrayHeap();
@@ -380,10 +382,10 @@
     function AddItemToHeap() {
         const keyValue = document.getElementById('keyValue').value;
         const valueValue = document.getElementById('valuePayload').value;
-        AddItemToHeapImpl(keyValue, valueValue);
+        AddItemToHeapImpl(keyValue, valueValue, USER_INPUT);
     }
 
-    function AddItemToHeapImpl(keyValue, valueValue) {
+    function AddItemToHeapImpl(keyValue, valueValue, mode) {
         let keyValueAsInt = Number.parseInt(keyValue);
 
         if (!Number.isInteger(keyValueAsInt) || keyValueAsInt < 1) {
@@ -392,7 +394,7 @@
         }
         if (!heapGlobalMap.has(keyValueAsInt) && heapGlobalMap.size() + 1 <= 15) {
             heapGlobalMap.set(keyValueAsInt, valueValue);
-            arrayHeap.Add(keyValueAsInt, valueValue);
+            arrayHeap.Add(keyValueAsInt, valueValue, mode); 
             localStorage.setItem("lastAddedKey" + keyValueAsInt, new Date().toLocaleString() + " " + keyValueAsInt + " " + valueValue);
             //localStorage.setItem(getIterationValue)
         }
@@ -433,7 +435,9 @@
         }
     }
 
-    async function BulkLoad() {
+    async function BulkLoad(mode, arrayToReconstitute = null) {
+        disableUI();
+
         let bulkLoadArray1 = [[89, "89value"],
         [77, "77value"], [88, "88value"],
         [11, "11value"], [16, "16value"], [7, "7value"], [15, "15value"],
@@ -453,7 +457,11 @@
         [77, "77value"], [88, "88value"],
         [11, "11value"], [16, "16value"], [7, "7value"], [15, "15value"]];
 
-        let current = bulkLoadArray4;
+        let current = bulkLoadArray2;
+        if(arrayToReconstitute !== null)
+        {
+            current = arrayToReconstitute;
+        }
 
         if (document.getElementById('maxVar' + lastMaxNode) !== null) {
             document.getElementById('maxVar' + lastMaxNode).remove();
@@ -462,42 +470,141 @@
         const slider = document.querySelector('input[type="range"]');
         slider.value = MINIMUM_VALUE_DURATION;
         durationOfAnimation = MINIMUM_VALUE_DURATION;
-        const syntheticEvent = new Event('input', { bubbles: true });
-        slider.dispatchEvent(syntheticEvent);
-
+        const syntheticEvent1 = new Event('input', { bubbles: true });
+        slider.dispatchEvent(syntheticEvent1);
+        // so since the heap is in the right order, no switches, so 100ms is close enough to instantaneous (not rewriting)
         for (let i = 0; i < current.length; i++) {
-            AddItemToHeapImpl(current[i][0], current[i][1]);
-            await delay(2000);  // we will have slightly more than 500 ms of animation time at minimum * 3, so need to wait 2s total, else two visual bugs (13 and 11 switched, one missing) with only 1000ms
-        }
+            AddItemToHeapImpl(current[i][0], current[i][1], mode);
+            await delay(GetMode(mode, BULK_LOAD_METHOD)); //2000);  // we will have slightly more than 500 ms of animation time at minimum * 3, so need to wait 2s total, else two visual bugs (13 and 11 switched, one missing) with only 1000ms
+        }   // this is a problem for restoring it
+
+        const syntheticEvent2 = new Event('input', { bubbles: true });
+        slider.value = MIDPOINT_VALUE_DURATION;
+        durationOfAnimation = MIDPOINT_VALUE_DURATION;
+        slider.dispatchEvent(syntheticEvent2);
+
+        reenableUI();
     }
 
-    function SaveHeapToDatabase() {
-        let heapArray = arrayHeap;
-        let heapHistoryItem = {            
-            Data: JSON.stringify(heapArray)
-        };
-        fetch('/HeapHistoryItems/SaveHeap', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-            },
-            body: JSON.stringify(heapHistoryItem)
-        })
-            .then(response => {
-                if (response.ok) {
-                    alert('Heap saved successfully!');
-                } else {
-                    alert('Error saving heap, with a response.');
-                }
-                return response.json();
-            })
-            .then(data => console.log(data))
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error saving heap, in catch block.');
-            });
+    function disableUI() {
+        document.getElementById("addKeyValue").disabled = true;
+        document.getElementById("getSum").disabled = true;
+        document.getElementById("removeMax").disabled = true;
+        document.getElementById("addBulk").disabled = true;
+        document.getElementById("saveHeap").disabled = true;
+        document.getElementById("submitFormId").disabled = true;
     }
+
+    function reenableUI() {
+        document.getElementById("addKeyValue").disabled = false;
+        document.getElementById("getSum").disabled = false;
+        document.getElementById("removeMax").disabled = false;
+        document.getElementById("addBulk").disabled = false;
+        document.getElementById("saveHeap").disabled = false;
+        document.getElementById("submitFormId").disabled = false;
+    }
+
+    function generateLimitedHeapToSave(heap) {
+        let limitedHeap = {};
+        limitedHeap.heapArray = heap.GetShallowHeapCopy();  // order of nodes is implicit
+        limitedHeap.stackOfTxtNodes = heap.stackOfTxtNodes;
+        limitedHeap.count = heap.count;
+
+        return limitedHeap;
+    }
+
+    function AppendHeapToSave() {
+        let limitedHeapToSave = generateLimitedHeapToSave(arrayHeap);
+        let data = JSON.stringify(limitedHeapToSave);
+        document.getElementById("HeapItem").value = data;
+    }
+
+    function dumpHeap(heap) {
+        let heapCopy = heap.heapArray;
+        console.log("Heap dump: ");
+        console.log(heapCopy);
+    }
+
+    // call on page load - check
+    async function ReconstituteHeap() {
+        console.log("Reconstitute Heap");
+        // check that field parses correctly
+        let parsedData = JSON.parse(document.getElementById("HeapItem").value);
+        console.log("Parsed heap data: ");
+
+        console.log("Heap array:");
+        console.log(parsedData.heapArray);
+
+        console.log("stackOfTxtNodes:");
+        console.log(parsedData.stackOfTxtNodes);
+
+        console.log("Count: ");
+        console.log(parsedData.count);
+
+        // bulk load, with RESTORE_FROM_DB mode
+        let arr = new Array();
+        for(let i=0; i < parsedData.heapArray.length && parsedData.heapArray[i] !== null; i++)
+        {
+            // extract key and value, and put into new array, before passing it to bulk load            
+            arr.push([parsedData.heapArray[i].key, parsedData.heapArray[i].value]);
+        }
+
+        await BulkLoad(RESTORE_FROM_DB, arr);
+        // 9/14: tested afterwards with dump
+        if(testFeatureDB) {
+            dumpHeap(arrayHeap);
+        }        
+    }
+
+    // function SaveHeapToDatabase() {
+    //     let limitedHeapToSave = generateLimitedHeapToSave(arrayHeap);
+    //     let heapHistoryItem = {            
+    //         Data: JSON.stringify(limitedHeapToSave)
+    //     };
+    //     fetch('/HeapHIstoryItems/SaveHeap', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+    //         },
+    //         body: JSON.stringify(heapHistoryItem)
+    //     })
+    //     .then(response => {
+    //         if (response.ok) {
+    //             alert('Heap saved successfully!');
+    //         } else {
+    //             alert('Error saving heap, with a response.');
+    //         }
+    //         if(testFeatureDB) {
+    //             console.log("Response (without json call): ");
+    //             console.log(response);
+    //         }
+
+    //         return response.json();
+    //     })
+    //     .then(data => {
+    //         if(testFeatureDB) {
+    //             console.log("Reflected data: ");
+    //             console.log(data);
+
+    //             let parsedData = JSON.parse(data.message);
+    //             console.log("Parsed data: ");
+
+    //             console.log("Heap array:");
+    //             console.log(parsedData.heapArray);
+
+    //             console.log("stackOfTxtNodes:");
+    //             console.log(parsedData.stackOfTxtNodes);
+
+    //             console.log("Count: ");
+    //             console.log(parsedData.count);
+    //         }
+    //     })
+    //     .catch(error => {
+    //         console.error('Error:', error);
+    //         alert('Error saving heap, in catch block.');
+    //     });
+    // }
 
     function Assert(condition) {
         if (condition == true) {
@@ -516,8 +623,10 @@
     document.getElementById("animationDurationId").addEventListener("input", (event) => {
         durationOfAnimation = event.target.value;
     });
-    document.getElementById("addBulk").addEventListener("click", BulkLoad);
+    document.getElementById("addBulk").addEventListener("click", () => BulkLoad(USER_INPUT));
     document.getElementById("saveHeap").addEventListener("click", SaveHeapToDatabase);
+    document.getElementById("submitFormId").addEventListener("click", AppendHeapToSave);
+    window.addEventListener("load", ReconstituteHeap);
 </script>
 
 <h1>Edit</h1>
@@ -540,7 +649,7 @@
                 <span asp-validation-for="HeapItem" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" id="submitFormId" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>

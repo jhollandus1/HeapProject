@@ -1,13 +1,37 @@
 ﻿import { HeapEvent, getIterationValue, exchangeUnderlyingValues } from './viewimplementation.js';
 import { Stack } from './stack.js';
 import { fixParentReference } from './utility.js';
-export { ArrayHeap, ArrayHeapNode, HeapItem };
+export { ArrayHeap, ArrayHeapNode, HeapItem, GetMode };
 
+export const USER_INPUT = "USER_INPUT";
+export const RESTORE_FROM_DB = "RESTORE_FROM_DB";
+
+export const BULK_LOAD_METHOD = "BULK_LOAD_METHOD";
+export const ADD_OR_REMOVE = "ADD_OR_REMOVE";
 
 const HeapItem = Object.freeze({
     FIRST: 1,
     LAST: 2
 });
+
+
+function GetMode(mode, operation) {
+    if (mode == USER_INPUT && operation == BULK_LOAD_METHOD) {
+        return 2000;
+    }
+    else if (mode == USER_INPUT && operation == ADD_OR_REMOVE) {
+        return 500;
+    }
+    else if (mode == RESTORE_FROM_DB && operation == BULK_LOAD_METHOD) {
+        return 100;
+    }
+    else if (mode == RESTORE_FROM_DB && operation == ADD_OR_REMOVE) {
+        return 0;   // this may need to change, because 500 was needed with no discernable wait, so may need 5 here (1/20)
+    }   // make it fail first, then fix it (like with add_or_remove/500)
+    else {
+        return 0;  // should never happen
+    }
+}
 
 class HeapNode {
     Accept(nodeVisitor) {
@@ -40,7 +64,7 @@ class ArrayHeap extends Observable {
     constructor() {
         super();
         this.heapArray = new Array(MaxNumberViewableElements);
-        this.stackOfTxtNodes = new Stack();
+        this.stackOfTxtNodes = [];
         if (testFeature1b) {
             console.log(this.heapArray);
         }
@@ -55,10 +79,18 @@ class ArrayHeap extends Observable {
         this.count = 0;
     }
 
+    // TODO: rename this
     GetHeapCopy() {
         let copy = new Array(MaxNumberViewableElements);
         this.DeepCopyArray(copy, this.heapArray);
         return copy;
+    }
+
+
+    GetShallowHeapCopy() {
+        let copy = new Array(MaxNumberViewableElements);
+        this.ShallowCopyArray(copy, this.heapArray);
+        return copy;        
     }
 
     GetNodeAtIndex(index) {
@@ -85,7 +117,7 @@ class ArrayHeap extends Observable {
         //heapArray[index] = treeNode;
     }
 
-    Add(key, value) {
+    Add(key, value, mode = USER_INPUT) {
         let newItem = new ArrayHeapNode(key, value);
         let newItemCopy = new ArrayHeapNode(key, value);
 
@@ -119,7 +151,7 @@ class ArrayHeap extends Observable {
 
         this.NotifyAllViews(new HeapEvent("add", newItemCopy, this.count - 1,
                                             pathToFilterUp, heapArrayCopyForView, this.UpdateModel,
-                                            this.heapArray, this.AddNodeToTracking, null, this.stackOfTxtNodes));
+                                            this.heapArray, this.AddNodeToTracking, null, this.stackOfTxtNodes, mode));
     }
 
     DeepCopyArray(to, from) {
@@ -150,7 +182,25 @@ class ArrayHeap extends Observable {
         }
     }
 
+    ShallowCopyArray(to, from) {
+        for (let i = 0; i < from.length; i++) {
+            if (from[i] != null) {
+                to[i] = new ArrayHeapNode();
+                to[i].key = from[i].key;
+                to[i].value = from[i].value;
+                //to[i].Parent = from[i].Parent;
+                to[i].cx = from[i].cx;
+                to[i].cy = from[i].cy;
+                to[i].iteration = from[i].iteration
+            }
+            else {
+                to[i] = null;
+            }
+        }
+    }
+
     RemoveMax() {
+        let mode = USER_INPUT;  // no need to have a RESTORE_FROM_DB mode for this operation, at this time
         if (this.count === 0) {
             return null;
         }
@@ -187,20 +237,20 @@ class ArrayHeap extends Observable {
         let pathToFilterDown = this.FilterDown(0);
         this.NotifyAllViews(new HeapEvent("removeMax", maxCopy, this.count + 1, pathToFilterDown,
                                             heapArrayForViewCopy, this.UpdateModel, this.heapArray,
-                                            this.GetNodeFromTracking, this.RemoveNodeFromTracking, this.stackOfTxtNodes));
+                                            this.GetNodeFromTracking, this.RemoveNodeFromTracking, this.stackOfTxtNodes, mode));
         return max;
     }
 
     AddNodeToTracking(stackOfTxtNodes, item) {
-        stackOfTxtNodes.Push(item);
+        stackOfTxtNodes.push(item);
     }
 
     GetNodeFromTracking(stackOfTxtNodes, heapItem) {
         if (heapItem === HeapItem.FIRST) {
-            return stackOfTxtNodes.PeekFirst();
+            return stackOfTxtNodes[0];
         }
         else if (heapItem === HeapItem.LAST) {
-            return stackOfTxtNodes.PeekLast();
+            return stackOfTxtNodes[stackOfTxtNodes.length - 1];
         }
         else {
             return null;
@@ -208,7 +258,7 @@ class ArrayHeap extends Observable {
     }
 
     RemoveNodeFromTracking(stackOfTxtNodes) {
-        return stackOfTxtNodes.Pop();
+        return stackOfTxtNodes.pop();
     }
 
     BuildHeap(unsortedArray) {
