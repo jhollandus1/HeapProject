@@ -1,0 +1,142 @@
+{
+  "heapArray": [
+    {
+      "key": 89,
+      "value": "89value",
+      "Parent": null,
+      "cx": 440,
+      "cy": 40,
+      "iteration": 0
+    },
+    {
+      "key": 77,
+      "value": "77value",
+      "Parent": null,
+      "cx": 286,
+      "cy": 100,
+      "iteration": 1
+    },
+    {
+      "key": 88,
+      "value": "88value",
+      "Parent": null,
+      "cx": 594,
+      "cy": 100,
+      "iteration": 2
+    },
+    {
+      "key": 14,
+      "value": "Payload",
+      "Parent": null,
+      "cx": 220,
+      "cy": 200,
+      "iteration": 7
+    },
+    {
+      "key": 16,
+      "value": "16value",
+      "Parent": null,
+      "cx": 330,
+      "cy": 200,
+      "iteration": 4
+    },
+    {
+      "key": 9,
+      "value": "Payload",
+      "Parent": null,
+      "cx": 528,
+      "cy": 200,
+      "iteration": 11
+    },
+    {
+      "key": 15,
+      "value": "15value",
+      "Parent": null,
+      "cx": 638,
+      "cy": 200,
+      "iteration": 6
+    },
+    {
+      "key": 100,
+      "value": "100value",
+      "Parent": null,
+      "cx": 176,
+      "cy": 300,
+      "iteration": 3
+    },
+    {
+      "key": 13,
+      "value": "Payload",
+      "Parent": null,
+      "cx": 242.00000000000003,
+      "cy": 300,
+      "iteration": 8
+    },
+    {
+      "key": 12,
+      "value": "Payload",
+      "Parent": null,
+      "cx": 308,
+      "cy": 300,
+      "iteration": 9
+    },
+    {
+      "key": 10,
+      "value": "Payload",
+      "Parent": null,
+      "cx": 374,
+      "cy": 300,
+      "iteration": 10
+    },
+    {
+      "key": 7,
+      "value": "7value",
+      "Parent": null,
+      "cx": 484.00000000000006,
+      "cy": 300,
+      "iteration": 5
+    },
+    {
+      "key": 8,
+      "value": "Payload",
+      "Parent": null,
+      "cx": 550,
+      "cy": 300,
+      "iteration": 12
+    },
+    {
+      "key": 5,
+      "value": "Payload",
+      "Parent": null,
+      "cx": 616,
+      "cy": 300,
+      "iteration": 13
+    },
+    {
+      "key": 6,
+      "value": "Payload",
+      "Parent": null,
+      "cx": 682,
+      "cy": 300,
+      "iteration": 14
+    }
+  ],
+  "stackOfTxtNodes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "count": 15
+}

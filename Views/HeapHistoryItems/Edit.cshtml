@@ -491,7 +491,6 @@
         document.getElementById("getSum").disabled = true;
         document.getElementById("removeMax").disabled = true;
         document.getElementById("addBulk").disabled = true;
-        document.getElementById("saveHeap").disabled = true;
         document.getElementById("submitFormId").disabled = true;
     }
 
@@ -500,7 +499,6 @@
         document.getElementById("getSum").disabled = false;
         document.getElementById("removeMax").disabled = false;
         document.getElementById("addBulk").disabled = false;
-        document.getElementById("saveHeap").disabled = false;
         document.getElementById("submitFormId").disabled = false;
     }
 
@@ -624,7 +622,6 @@
         durationOfAnimation = event.target.value;
     });
     document.getElementById("addBulk").addEventListener("click", () => BulkLoad(USER_INPUT));
-    document.getElementById("saveHeap").addEventListener("click", SaveHeapToDatabase);
     document.getElementById("submitFormId").addEventListener("click", AppendHeapToSave);
     window.addEventListener("load", ReconstituteHeap);
 </script>
@@ -671,7 +668,6 @@
         <br />
         <br />
         <button id="addBulk">Add bulk array</button>
-        <button id="saveHeap">Save</button>
     </div>
 </div>
 

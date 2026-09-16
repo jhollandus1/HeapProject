@@ -1,0 +1,78 @@
+{
+  "heapArray": [
+    {
+      "key": 89,
+      "value": "89value",
+      "Parent": null,
+      "cx": 440,
+      "cy": 40,
+      "iteration": 0
+    },
+    {
+      "key": 77,
+      "value": "77value",
+      "Parent": null,
+      "cx": 286,
+      "cy": 100,
+      "iteration": 1
+    },
+    {
+      "key": 88,
+      "value": "88value",
+      "Parent": null,
+      "cx": 594,
+      "cy": 100,
+      "iteration": 2
+    },
+    {
+      "key": 11,
+      "value": "11value",
+      "Parent": null,
+      "cx": 220,
+      "cy": 200,
+      "iteration": 3
+    },
+    {
+      "key": 16,
+      "value": "16value",
+      "Parent": null,
+      "cx": 330,
+      "cy": 200,
+      "iteration": 4
+    },
+    {
+      "key": 7,
+      "value": "7value",
+      "Parent": null,
+      "cx": 528,
+      "cy": 200,
+      "iteration": 5
+    },
+    {
+      "key": 15,
+      "value": "15value",
+      "Parent": null,
+      "cx": 638,
+      "cy": 200,
+      "iteration": 6
+    },
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "stackOfTxtNodes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "count": 7
+}

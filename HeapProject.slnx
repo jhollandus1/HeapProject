@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="../HeapProject.Tests/HeapProject.Tests.csproj" Id="67573341-08c6-4a18-8f17-d717bfb75871" />
   <Project Path="HeapProject.csproj" />
+  <Project Path="HeapProject.Tests/HeapProject.Tests.csproj" />
 </Solution>

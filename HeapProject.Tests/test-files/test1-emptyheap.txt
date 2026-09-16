@@ -1,0 +1,21 @@
+{
+  "heapArray": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "stackOfTxtNodes": [],
+  "count": 0
+}

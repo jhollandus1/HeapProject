@@ -1,0 +1,38 @@
+{
+  "heapArray": [
+    {
+      "key": 89,
+      "value": "89value",
+      "Parent": null,
+      "cx": 440,
+      "cy": 40,
+      "iteration": 0
+    },
+    {
+      "key": 77,
+      "value": "77value",
+      "Parent": null,
+      "cx": 286,
+      "cy": 100,
+      "iteration": 1
+    },
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "stackOfTxtNodes": [
+    0,
+    1
+  ],
+  "count": 2
+}
