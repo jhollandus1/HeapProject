@@ -56,7 +56,7 @@ public class HeapHistoryItemsController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,SavedTime,HeapItem")] HeapHistoryItem heaphistoryitem)
+    public async Task<IActionResult> Create([Bind("Id,SavedTime,HeapItem,HeapItemLabel")] HeapHistoryItem heaphistoryitem)
     {
         if (ModelState.IsValid)
         {
@@ -203,7 +203,7 @@ public class HeapHistoryItemsController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,SavedTime,HeapItem")] HeapHistoryItem heaphistoryitem)
+    public async Task<IActionResult> Edit(int? id, [Bind("Id,SavedTime,HeapItem,HeapItemLabel")] HeapHistoryItem heaphistoryitem)
     {
         if (id != heaphistoryitem.Id)
         {

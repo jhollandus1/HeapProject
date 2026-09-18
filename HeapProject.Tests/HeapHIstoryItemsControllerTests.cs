@@ -14,7 +14,7 @@ namespace HeapProject.Tests
         {
             var heapHistoryItemList = new List<HeapProject.Models.HeapHistoryItem>
             {                                                       // good enough
-                new HeapProject.Models.HeapHistoryItem { Id = 1, HeapItem = "", SavedTime = DateTime.Now }
+                new HeapProject.Models.HeapHistoryItem { Id = 1, HeapItem = "", SavedTime = DateTime.Now, HeapItemLabel = string.Empty }
             };
             var mockRepo = new Mock<HeapProjectContext>(new DbContextOptions<HeapProjectContext>());
 
