@@ -523,6 +523,57 @@
         console.log(heapCopy);
     }
 
+    // don't trust client input
+    function SetDate() {
+        document.querySelectorAll('.local-time').forEach(function (element) {
+            let utcString = element.getAttribute('data-utc');
+            if(utcString) {
+                const savedDate = new Date(utcString);
+                const localDateTime = new Date();
+                
+                // adjust the ms by twice the offset (2 is necessary because advancing it with nothing, with 1 brings back to UTC)
+                localDateTime.setTime(savedDate.getTime() - localDateTime.getTimezoneOffset()*2*60*1000);
+                // let localTime = new Date(localDate.getUTCFullYear(),
+                //                             localDate.getUTCMonth(),
+                //                             localDate.getUTCDate(),
+                //                             localDate.getUTCHours(),
+                //                             localDate.getUTCMinutes() - localDate.getTimezoneOffset());
+                // const now = new Date();
+                
+                // alert("localDate" + localDate);
+                // alert("now" + now);
+                // alert("localDate.getMinutes()" + localDate.getMinutes());
+                // alert("now.getTimezoneOffset()" + now.getTimezoneOffset());
+
+                // let localDateCopy = localDate;
+                // localDateCopy.setMinutes(localDate.getMinutes() - now.getTimezoneOffset());
+                
+                // alert("localDateCopy.getMinutes:" + localDateCopy.getMinutes());
+
+
+        // let now1 = new Date();
+        // localDate.setMinutes(localDate.getMinutes() - now1.getTimezoneOffset());
+        //now1.setMinutes(now1.getMinutes() - now1.getTimezoneOffset());
+        //alert("Local Date (non-UTC): " + localTime.toString());
+
+        //let newDate = new Date()
+        // only sets it up to minutes
+        document.getElementById("SavedTime").value = localDateTime.toISOString().slice(0, 16);
+
+                //sdocument.getElementById("SavedTime").value = now1.toISOString().slice(0,16);
+
+                // element.textContent = localDate.toLocaleString(undefined, {
+                //     year: 'numeric',
+                //     month: 'short',
+                //     day: 'numeric',
+                //     hour: '2-digit',
+                //     minute: '2-digit'
+                // });
+            }            
+        }); 
+        
+    }
+
     // call on page load - check
     async function ReconstituteHeap() {
         console.log("Reconstitute Heap");
@@ -623,13 +674,16 @@
     });
     document.getElementById("addBulk").addEventListener("click", () => BulkLoad(USER_INPUT));
     document.getElementById("submitFormId").addEventListener("click", AppendHeapToSave);
+    //document.getElementById("submitFormId").addEventListener("click", SetDate);
     window.addEventListener("load", ReconstituteHeap);
+    //document.addEventListener("DOMContentLoaded", SetDate);
 </script>
 
 <h1>Edit</h1>
 
 <h4>HeapHistoryItem</h4>
 <hr />
+<span class="local-time" data-utc="@Model.SavedTime.ToString("o")"></span>
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
@@ -637,7 +691,7 @@
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="SavedTime" class="control-label"></label>
-                <input asp-for="SavedTime" class="form-control" />
+                <input asp-for="SavedTime" class="form-control" disabled="disabled" />
                 <span asp-validation-for="SavedTime" class="text-danger"></span>
             </div>
             <div class="form-group">
