@@ -1,8 +1,22 @@
+using HeapProject;
+using HeapProject.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("HeapProjectContext") ?? throw new InvalidOperationException("Connection string 'HeapProjectContext' not found.");
 
 builder.Services.AddDbContext<HeapProjectContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+    {
+        // the unique username constraint is already being enforced at the application level (somehow - not explicit here),
+        // but NormalizedUserName is (also) enforced at the index (Database) level
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddEntityFrameworkStores<ApplicationDBContext>()
+    .AddDefaultTokenProviders();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -18,8 +32,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

@@ -12,8 +12,8 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.SavedTime)
+            <th> 
+                @Html.DisplayNameFor(model => model.SavedTime)              
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.HeapItemLabel)
@@ -26,6 +26,8 @@
         <tr>
             <td>
                 @Html.DisplayFor(model => item.SavedTime)
+                <br />
+                <span asp-display-name-for="@item.SavedTime"></span>
             </td>
             <td>
                 @Html.DisplayFor(model => item.HeapItemLabel)
