@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HeapProject.Identity;
 using HeapProject.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HeapProject.Controllers
 {
@@ -19,10 +20,8 @@ namespace HeapProject.Controllers
         [HttpGet]
         public IActionResult Login() => View();
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+        [HttpGet]
+        public IActionResult Index() => View();
 
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -37,7 +36,7 @@ namespace HeapProject.Controllers
 
                     // different from noted, need authorize attribute on this controller eventually
                     if (result.Succeeded)
-                    {
+                    {                      
                         return RedirectToAction("Index", "HeapHistoryItems");
                     }
 

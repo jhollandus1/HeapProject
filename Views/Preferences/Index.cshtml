@@ -1,0 +1,9 @@
+﻿@model PreferencesViewModel
+
+<form asp-controller="Preferences" asp-action="SetLocale" method="post" class="form-inline">
+    <div class="form-group">
+        <label asp-for="SelectedPreferredLocaleId" class="control-label"></label>
+        <select asp-for="SelectedPreferredLocaleId" asp-items="Model.PreferredLocaleList" onchange="this.form.submit()" class="form-control form-select-sm"></select>
+        <span asp-validation-for="SelectedPreferredLocaleId" class="text-danger"></span>
+    </div>
+</form>
