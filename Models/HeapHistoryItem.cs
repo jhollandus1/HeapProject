@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace HeapProject.Models;
 
-namespace HeapProject.Models;
-
+using System.ComponentModel.DataAnnotations;
 public class HeapHistoryItem
 {
     public int Id { get; set; }

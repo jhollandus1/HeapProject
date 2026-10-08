@@ -6,8 +6,16 @@ namespace HeapProject.Models
 {
     public class PreferencesViewModel
     {
-        [Display(Name = "Preferred Locale")]
+        [Display(Name = "Preferred locale")]
         public string SelectedPreferredLocaleId { get; set; }
-        public List<SelectListItem> PreferredLocaleList { get; set; } = new List<SelectListItem>();
+        // without the new List<SelectListItem>(), the TimeZoneList is null when the form is posted back, which causes the ModelState to be invalid
+
+        public IEnumerable<SelectListItem> PreferredLocaleList { get; set; } = new List<SelectListItem>();
+
+
+        [Display(Name = "Preferred time zone")]
+        public string SelectedTimeZone { get; set; }
+        // without the new List<SelectListItem>(), the TimeZoneList is null when the form is posted back, which causes the ModelState to be invalid
+        public IEnumerable<SelectListItem> TimeZoneList { get; set; } = new List<SelectListItem>();
     }
 }

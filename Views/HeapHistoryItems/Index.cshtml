@@ -1,4 +1,4 @@
-@model IEnumerable<HeapProject.Models.HeapHistoryItem>
+@model IEnumerable<HeapProject.Models.HeapHistoryItemViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,10 +13,10 @@
     <thead>
         <tr>
             <th> 
-                @Html.DisplayNameFor(model => model.SavedTime)              
+                @Html.DisplayNameFor(model => model.SavedTimeString)              
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HeapItemLabel)
+                @Html.DisplayNameFor(model => model.EncryptedItemLabel)
             </th>
             <th></th>
         </tr>
@@ -25,10 +25,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(model => item.SavedTime)
+                @Html.DisplayFor(model => item.SavedTimeString)
             </td>
             <td>
-                @Html.DisplayFor(model => item.HeapItemLabel)
+                @Html.DisplayFor(model => item.EncryptedItemLabel)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

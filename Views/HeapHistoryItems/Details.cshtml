@@ -1,4 +1,4 @@
-@model HeapProject.Models.HeapHistoryItem
+@model HeapProject.Models.HeapHistoryItemViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -11,17 +11,17 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SavedTime)
+            @Html.DisplayNameFor(model => model.SavedTimeString)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SavedTime)
+            @Html.DisplayFor(model => model.SavedTimeString)
         </dd>
     </dl>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HeapItem)
+            @Html.DisplayNameFor(model => model.EncryptedItem)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HeapItem)
+            @Html.DisplayFor(model => model.EncryptedItem)
         </dd>
     </dl>
 </div>

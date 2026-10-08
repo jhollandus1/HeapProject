@@ -9,23 +9,48 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
+using HeapProject.ExtensionMethods;
+using Microsoft.AspNetCore.Identity;
+using HeapProject.Identity;
+using Microsoft.Extensions.Options;
 
 [Authorize]
 public class HeapHistoryItemsController : Controller
 {
     private readonly HeapProjectContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RequestLocalizationOptions _requestLocalizationOptions;
+    //private readonly ApplicationUser? user = await _userManager.GetUserAsync(User);
+
     private readonly int MAX_SIZE_HEAP = 15;
 
 
-    public HeapHistoryItemsController(HeapProjectContext context)
+    public HeapHistoryItemsController(HeapProjectContext context, UserManager<ApplicationUser> userManager, IOptions<RequestLocalizationOptions> requestLocalizationOptions)
     {
         _context = context;
+        _userManager = userManager;
+        _requestLocalizationOptions = requestLocalizationOptions.Value;
     }
 
     // GET: HEAPHISTORYITEMS
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.HeapHistoryItem.ToListAsync());
+        ApplicationUser? user = await _userManager.GetUserAsync(User);
+        if (user != null)
+        {
+            // convert the items by date
+            var heapHistoryList = await _context.HeapHistoryItem.ToListAsync();
+            HeapHistoryItemViewModel[] heapHistoryItemViewModels = heapHistoryList.Select(item => new HeapHistoryItemViewModel
+            {
+                Id = item.Id,
+                SavedTimeString = item.SavedTime.ToUserTimeZoneLocaleString(user.PreferredTimeZone, user.PreferredLocale),
+                EncryptedItem = item.HeapItem,
+                EncryptedItemLabel = item.HeapItemLabel
+            }).ToArray();
+
+            return View(heapHistoryItemViewModels);
+        }
+        return NotFound();
     }
 
     // GET: HEAPHISTORYITEMS/Details/5
@@ -37,13 +62,27 @@ public class HeapHistoryItemsController : Controller
         }
 
         var heaphistoryitem = await _context.HeapHistoryItem
-            .FirstOrDefaultAsync(m => m.Id == id);
+                                            .FirstOrDefaultAsync(m => m.Id == id);
         if (heaphistoryitem == null)
         {
             return NotFound();
         }
 
-        return View(heaphistoryitem);
+        ApplicationUser? user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        HeapHistoryItemViewModel model = new HeapHistoryItemViewModel()
+        {
+            Id = heaphistoryitem.Id,
+            EncryptedItemLabel = heaphistoryitem.HeapItemLabel,
+            EncryptedItem = heaphistoryitem.HeapItem,
+            SavedTimeString = heaphistoryitem.SavedTime.ToUserTimeZoneLocaleString(user.PreferredTimeZone, user.PreferredLocale)
+        };
+
+        return View(model);
     }
 
     // GET: HEAPHISTORYITEMS/Create
@@ -76,12 +115,26 @@ public class HeapHistoryItemsController : Controller
             return NotFound();
         }
 
+        var user = await _userManager.GetUserAsync(User);
+        if(user == null)
+        {
+            return NotFound();
+        }
+
         var heaphistoryitem = await _context.HeapHistoryItem.FindAsync(id);
         if (heaphistoryitem == null)
         {
             return NotFound();
         }
-        return View(heaphistoryitem);
+        HeapHistoryItemViewModel model = new HeapHistoryItemViewModel()
+        {
+            Id = heaphistoryitem.Id,
+            EncryptedItemLabel = heaphistoryitem.HeapItemLabel,
+            EncryptedItem = heaphistoryitem.HeapItem,
+            SavedTimeString = heaphistoryitem.SavedTime.ToUserTimeZoneLocaleString(user.PreferredTimeZone, user.PreferredLocale),
+        };
+
+        return View(model);
     }
 
     public class HeapParsedItem
@@ -204,9 +257,9 @@ public class HeapHistoryItemsController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     //[ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,SavedTime,HeapItem,HeapItemLabel")] HeapHistoryItem heaphistoryitem)
+    public async Task<IActionResult> Edit(int? id, HeapHistoryItemViewModel heapHistoryItem)
     {
-        if (id != heaphistoryitem.Id)
+        if (id != heapHistoryItem.Id)
         {
             return NotFound();
         }
@@ -214,21 +267,29 @@ public class HeapHistoryItemsController : Controller
         //JsonNode node = JsonNode.Parse(heaphistoryitem.HeapItem);
         //System.IO.File.WriteAllText("c:\\test\\test1-emptyheap.txt", node.ToString());
 
-        if (!IsValidMaxHeap(heaphistoryitem.HeapItem))
+        //if (!IsValidMaxHeap(heaphistoryitem.HeapItem))
+        //{
+        //    return BadRequest();    // TODO: response good enough for now
+        //}
+
+        HeapHistoryItem heapHistoryItemDB = new HeapHistoryItem()
         {
-            return BadRequest();    // TODO: response good enough for now
-        }
+            Id = heapHistoryItem.Id,
+            HeapItemLabel = heapHistoryItem.EncryptedItemLabel,
+            HeapItem = heapHistoryItem.EncryptedItem,
+            SavedTime = DateTime.UtcNow
+        };
 
         if (ModelState.IsValid)
         {
             try
             {
-                _context.Update(heaphistoryitem);
+                _context.Update(heapHistoryItemDB);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!HeapHistoryItemExists(heaphistoryitem.Id))
+                if (!HeapHistoryItemExists(heapHistoryItemDB.Id))
                 {
                     return NotFound();
                 }
@@ -239,7 +300,8 @@ public class HeapHistoryItemsController : Controller
             }
             return RedirectToAction(nameof(Index));
         }
-        return View(heaphistoryitem);
+
+        return View(heapHistoryItem);
     }
 
     //public class HeapHistoryData
@@ -268,13 +330,27 @@ public class HeapHistoryItemsController : Controller
         }
 
         var heaphistoryitem = await _context.HeapHistoryItem
-            .FirstOrDefaultAsync(m => m.Id == id);
+            .FirstOrDefaultAsync(m => m.Id == id);        
         if (heaphistoryitem == null)
         {
             return NotFound();
         }
 
-        return View(heaphistoryitem);
+        ApplicationUser? user = await _userManager.GetUserAsync(User);
+        if(user == null)
+        {
+            return NotFound();
+        }
+
+        HeapHistoryItemViewModel model = new HeapHistoryItemViewModel()
+        {
+            Id = heaphistoryitem.Id,
+            EncryptedItemLabel = heaphistoryitem.HeapItemLabel,
+            EncryptedItem = heaphistoryitem.HeapItem,
+            SavedTimeString = heaphistoryitem.SavedTime.ToUserTimeZoneLocaleString(user.PreferredTimeZone, user.PreferredLocale)
+        };
+
+        return View(model);
     }
 
     // POST: HEAPHISTORYITEMS/Delete/5

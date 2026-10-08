@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace HeapProject.TagHelpers
 {
     [HtmlTargetElement("span", Attributes = "asp-display-name-for")]
-    public class DisplayNameTagHelper : TagHelper
+    public class DisplayNameForTagHelper : TagHelper
     {
         [HtmlAttributeName("asp-display-name-for")]
         public ModelExpression For { get; set; }

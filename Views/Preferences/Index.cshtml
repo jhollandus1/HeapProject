@@ -1,9 +1,21 @@
 ﻿@model PreferencesViewModel
 
-<form asp-controller="Preferences" asp-action="SetLocale" method="post" class="form-inline">
+<form asp-controller="Preferences" asp-action="Index" method="post" class="form-inline">
+    <!-- Validation summary is unused, since it is overkill with the _ErrorNotification partial -->
+    <div asp-validation-summary="None" class="text-danger"></div>
     <div class="form-group">
         <label asp-for="SelectedPreferredLocaleId" class="control-label"></label>
-        <select asp-for="SelectedPreferredLocaleId" asp-items="Model.PreferredLocaleList" onchange="this.form.submit()" class="form-control form-select-sm"></select>
+        <select asp-for="SelectedPreferredLocaleId" asp-items="Model.PreferredLocaleList" class="form-control form-select-sm"></select>
         <span asp-validation-for="SelectedPreferredLocaleId" class="text-danger"></span>
     </div>
+    <div class="form-group">
+        <label asp-for="SelectedTimeZone" class="control-label"></label>
+        <select asp-for="SelectedTimeZone" asp-items="Model.TimeZoneList" class="form-control form-select-sm"></select>
+        <span asp-validation-for="SelectedTimeZone" class="text-danger"></span>
+   </div>
+   <button type="submit" class="btn btn-primary mt-2">Save User Settings</button>
 </form>
+
+<br/>
+<partial name="_SuccessNotification" />
+<partial name="_ErrorNotification" />
