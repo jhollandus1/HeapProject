@@ -1,13 +1,16 @@
 ﻿@model RegisterViewModel
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> SharedLocalizer
 
 @{
     ViewData["Title"] = "Register";
 }
 
 <div class="container">
+    <partial name="_Language" for="LanguageVM"/>
+    <br/>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <form asp-action="RegisterUser" method="post">
-        @Html.AntiForgeryToken()
-        <div asp-validation-summary="All" class="text-danger"></div>
         <div class="form-group">
             <label asp-for="FirstName" class="control-label"></label>
             <input asp-for="FirstName" class="form-control" />
@@ -39,7 +42,21 @@
             <span asp-validation-for="UserName" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <input type="submit" value="Register" class="btn btn-primary" />
+            <label asp-for="SelectedPreferredLocaleId" class="control-label"></label>
+             <select asp-for="SelectedPreferredLocaleId" asp-items="Model.PreferredLocaleList" class="form-control form-select-sm"></select>
+             <span asp-validation-for="SelectedPreferredLocaleId" class="text-danger"></span> 
+        </div>
+        <div class="form-group">
+            <label asp-for="SelectedTimeZone" class="control-label"></label>
+            <select asp-for="SelectedTimeZone" asp-items="Model.TimeZoneList" class="form-control form-select-sm"></select>
+            <span asp-validation-for="SelectedTimeZone" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">
+                @SharedLocalizer["RegisterButton"]
+            </button> 
         </div>
     </form>
 </div>
+<partial name="_SuccessNotification" /> <!-- Probably not needed, because of redirect to login page, but leave in here -->
+<partial name="_ErrorNotification" />

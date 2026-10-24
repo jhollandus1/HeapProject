@@ -1,0 +1,6 @@
+﻿@model HeapProject.Models.RegisterViewModel.LanguageViewModel
+
+<!-- This partial view allows users to select their preferred language -->
+<form asp-controller="Account" asp-action="SelectPreferredLanguage" method="post">
+    <select asp-for="SelectedPreferredLanguage" asp-items="Model.LanguageList" class="form-control" onchange="this.form.submit()"></select>
+</form>

@@ -13,6 +13,8 @@ using HeapProject.ExtensionMethods;
 using Microsoft.AspNetCore.Identity;
 using HeapProject.Identity;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Localization;
+using HeapProject;
 
 [Authorize]
 public class HeapHistoryItemsController : Controller
@@ -20,16 +22,20 @@ public class HeapHistoryItemsController : Controller
     private readonly HeapProjectContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RequestLocalizationOptions _requestLocalizationOptions;
+    private readonly IStringLocalizer<SharedResource> _sharedLocalizer;
     //private readonly ApplicationUser? user = await _userManager.GetUserAsync(User);
 
     private readonly int MAX_SIZE_HEAP = 15;
 
 
-    public HeapHistoryItemsController(HeapProjectContext context, UserManager<ApplicationUser> userManager, IOptions<RequestLocalizationOptions> requestLocalizationOptions)
+    public HeapHistoryItemsController(HeapProjectContext context, UserManager<ApplicationUser> userManager, 
+                                        IOptions<RequestLocalizationOptions> requestLocalizationOptions,
+                                        IStringLocalizer<SharedResource> sharedLocalizer)
     {
         _context = context;
         _userManager = userManager;
         _requestLocalizationOptions = requestLocalizationOptions.Value;
+        _sharedLocalizer = sharedLocalizer;
     }
 
     // GET: HEAPHISTORYITEMS
@@ -52,6 +58,7 @@ public class HeapHistoryItemsController : Controller
         }
         return NotFound();
     }
+    //_sharedLocalizer["SavedTime"]
 
     // GET: HEAPHISTORYITEMS/Details/5
     public async Task<IActionResult> Details(int? id)

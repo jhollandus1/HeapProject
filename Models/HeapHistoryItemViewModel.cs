@@ -5,7 +5,7 @@ namespace HeapProject.Models
     {
         public int Id { get; set; }
 
-        [Display(Name = "Saved Time")]
+        [Display(Name = "SavedTime")]
         public string? SavedTimeString { get; set; }
 
         [Display(Name = "Encrypted item")]

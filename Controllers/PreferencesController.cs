@@ -25,41 +25,45 @@ namespace HeapProject.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            // is this based on cookies or DB, DB should come first, should be able to remove cookie if user has a preference in DB, right?
-            var currentCulture = HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture.UICulture.Name;
-            var cultureItems = _requestLocalizationOptions.SupportedUICultures
-                                                        .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName, Selected = c.Name == currentCulture })
-                                                        .ToList();
-
-            PreferencesViewModel model = new PreferencesViewModel();
-            model.PreferredLocaleList = cultureItems;
-
             ApplicationUser? user = await _userManager.GetUserAsync(User);
-            if (user != null) 
+            if(user == null)
             {
-                var timeZoneList = TimeZoneInfo.GetSystemTimeZones()
-                                                .Select(tz => new SelectListItem { Text = tz.DisplayName, Value = tz.Id, Selected = tz.Id == user.PreferredTimeZone })
-                                                .ToList();
-                model.TimeZoneList = timeZoneList;
+                return NotFound("Username not found: " + User.Identity?.Name);
             }
+            
+            var cultureItems = _requestLocalizationOptions.SupportedUICultures
+                                                    .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName, Selected = c.Name == user.PreferredLocale })
+                                                    .ToList(); 
+            var timeZoneList = TimeZoneInfo.GetSystemTimeZones()
+                                            .Select(tz => new SelectListItem { Text = tz.DisplayName, Value = tz.Id, Selected = tz.Id == user.PreferredTimeZone })
+                                            .ToList();
 
-            return View(model);
+            PreferencesViewModel model = new PreferencesViewModel()
+            {
+                PreferredLocaleList = cultureItems,
+                TimeZoneList = timeZoneList
+            };
+
+            return View(model);           
         }
 
         [HttpPost]
         public async Task<IActionResult> Index(PreferencesViewModel model)
         {
-            var currentCulture = HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture.UICulture.Name;
+            ApplicationUser? user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound("Username not found: " + User.Identity?.Name);
+            }
+            
             var cultureItems = _requestLocalizationOptions.SupportedUICultures
-                                                        .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName, Selected = c.Name == currentCulture })
+                                                        .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName })
                                                         .ToList();
 
             var timeZoneList = TimeZoneInfo.GetSystemTimeZones()
                                             .Select(tz => new SelectListItem { Text = tz.DisplayName, Value = tz.Id })
                                             .ToList();
 
-            bool condition1Culture = true;
-            bool condition2TimeZone = true;
 
             if (!ModelState.IsValid)
             {   
@@ -71,9 +75,10 @@ namespace HeapProject.Controllers
 
                 return View(model);
             }
-
-            ApplicationUser? user = await _userManager.GetUserAsync(User);
             
+            bool condition1Culture = true;
+            bool condition2TimeZone = true;
+
             CultureInfo culture = CultureInfo.CurrentUICulture;
             for(int i = 0; i <  _requestLocalizationOptions.SupportedUICultures.Count; i++)
             {
@@ -95,9 +100,14 @@ namespace HeapProject.Controllers
             try
             {
                 var timeZone = TimeZoneInfo.FindSystemTimeZoneById(model.SelectedTimeZone);
-                if (user != null && timeZone != null && condition1Culture)
+                if (user != null && timeZone != null)
                 {
                     user.PreferredTimeZone = timeZone.Id;
+                }
+                else
+                {
+                    ModelState.AddModelError(nameof(model.SelectedTimeZone), "Invalid timezone selected.");
+                    condition2TimeZone = false;
                 }
             }
             catch (TimeZoneNotFoundException)
@@ -114,20 +124,13 @@ namespace HeapProject.Controllers
             {
                 if (user != null && condition1Culture && condition2TimeZone)
                 {
-                    await _userManager.UpdateAsync(user);
-                    Response.Cookies.Append(
-                            CookieRequestCultureProvider.DefaultCookieName,
-                            CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
-                            new CookieOptions
-                            {
-                                Expires = DateTimeOffset.UtcNow.AddYears(1),
-                                HttpOnly = true,
-                                Secure = true,
-                                SameSite = SameSiteMode.Strict
-                            }
-                    );
-                    TempData["SuccessMessage"] = "Succesfully updated user settings.";
-                    return LocalRedirect("/Preferences");
+                    var result = await _userManager.UpdateAsync(user);
+                    if(!result.Succeeded)
+                    {
+                        // return to here
+                    }
+                    TempData["SuccessMessage"] = "Succesfully updated user settings.";  // TODO: internationalize
+                    return RedirectToAction("Index", "Preferences");
                 }
                 else
                 {

@@ -22,7 +22,7 @@ namespace HeapProject.CultureProvider
 
                 if(user != null && !string.IsNullOrEmpty(user.PreferredLocale))
                 {
-                    return new ProviderCultureResult(user.PreferredLocale);
+                    return new ProviderCultureResult(user.PreferredLocale, user.PreferredLocale);
                 }
             }
 
