@@ -22,7 +22,7 @@ inject IStringLocalizer<SharedResource> SharedLocalizer
                 @Html.DisplayNameFor(model => model.SavedTimeString)              
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.EncryptedItemLabel)
+                @Html.DisplayNameFor(model => model.HeapItemLabel)
             </th>
             <th></th>
         </tr>
@@ -34,7 +34,7 @@ inject IStringLocalizer<SharedResource> SharedLocalizer
                 @Html.DisplayFor(model => item.SavedTimeString)
             </td>
             <td>
-                @Html.DisplayFor(model => item.EncryptedItemLabel)
+                @Html.DisplayFor(model => item.HeapItemLabel)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

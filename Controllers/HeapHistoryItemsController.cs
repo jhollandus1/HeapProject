@@ -50,8 +50,8 @@ public class HeapHistoryItemsController : Controller
             {
                 Id = item.Id,
                 SavedTimeString = item.SavedTime.ToUserTimeZoneLocaleString(user.PreferredTimeZone, user.PreferredLocale),
-                EncryptedItem = item.HeapItem,
-                EncryptedItemLabel = item.HeapItemLabel
+                HeapItem = item.HeapItem,
+                HeapItemLabel = item.HeapItemLabel
             }).ToArray();
 
             return View(heapHistoryItemViewModels);
@@ -84,8 +84,8 @@ public class HeapHistoryItemsController : Controller
         HeapHistoryItemViewModel model = new HeapHistoryItemViewModel()
         {
             Id = heaphistoryitem.Id,
-            EncryptedItemLabel = heaphistoryitem.HeapItemLabel,
-            EncryptedItem = heaphistoryitem.HeapItem,
+            HeapItemLabel = heaphistoryitem.HeapItemLabel,
+            HeapItem = heaphistoryitem.HeapItem,
             SavedTimeString = heaphistoryitem.SavedTime.ToUserTimeZoneLocaleString(user.PreferredTimeZone, user.PreferredLocale)
         };
 
@@ -136,8 +136,8 @@ public class HeapHistoryItemsController : Controller
         HeapHistoryItemViewModel model = new HeapHistoryItemViewModel()
         {
             Id = heaphistoryitem.Id,
-            EncryptedItemLabel = heaphistoryitem.HeapItemLabel,
-            EncryptedItem = heaphistoryitem.HeapItem,
+            HeapItemLabel = heaphistoryitem.HeapItemLabel,
+            HeapItem = heaphistoryitem.HeapItem,
             SavedTimeString = heaphistoryitem.SavedTime.ToUserTimeZoneLocaleString(user.PreferredTimeZone, user.PreferredLocale),
         };
 
@@ -282,8 +282,8 @@ public class HeapHistoryItemsController : Controller
         HeapHistoryItem heapHistoryItemDB = new HeapHistoryItem()
         {
             Id = heapHistoryItem.Id,
-            HeapItemLabel = heapHistoryItem.EncryptedItemLabel,
-            HeapItem = heapHistoryItem.EncryptedItem,
+            HeapItemLabel = heapHistoryItem.HeapItemLabel,
+            HeapItem = heapHistoryItem.HeapItem,
             SavedTime = DateTime.UtcNow
         };
 
@@ -352,8 +352,8 @@ public class HeapHistoryItemsController : Controller
         HeapHistoryItemViewModel model = new HeapHistoryItemViewModel()
         {
             Id = heaphistoryitem.Id,
-            EncryptedItemLabel = heaphistoryitem.HeapItemLabel,
-            EncryptedItem = heaphistoryitem.HeapItem,
+            HeapItemLabel = heaphistoryitem.HeapItemLabel,
+            HeapItem = heaphistoryitem.HeapItem,
             SavedTimeString = heaphistoryitem.SavedTime.ToUserTimeZoneLocaleString(user.PreferredTimeZone, user.PreferredLocale)
         };
 
