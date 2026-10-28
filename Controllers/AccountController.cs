@@ -1,7 +1,5 @@
-﻿using Azure.Core;
-using HeapProject.Identity;
+﻿using HeapProject.Identity;
 using HeapProject.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +39,7 @@ namespace HeapProject.Controllers
             if(ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(email);
+                
                 if(user != null)
                 {
                     var result = await _signInManager.PasswordSignInAsync(user, password, rememberMe, lockoutOnFailure: false);
@@ -50,8 +49,16 @@ namespace HeapProject.Controllers
                     {                      
                         return RedirectToAction("Index", "HeapHistoryItems");
                     }
-
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    else
+                    {
+                        //ModelState.AddModelError(string.Empty, _stringLocalizer["InvalidLoginAttempt"].Value);
+                        ViewData["ErrorMessage"] = _stringLocalizer["InvalidLoginAttempt"].Value;   // tested
+                    }                    
+                }
+                else
+                {
+                    //ModelState.AddModelError(string.Empty, _stringLocalizer["InvalidLoginAttempt"].Value);       // could be more specific, but don't give away too much info (security issue)
+                    ViewData["ErrorMessage"] = _stringLocalizer["InvalidLoginAttempt"].Value;       // tested
                 }
             }
             return View();
@@ -149,7 +156,6 @@ namespace HeapProject.Controllers
             ModelState.Remove(nameof(registerViewModel.SelectedPreferredLocaleId));
             if (!ModelState.IsValid)
             {
-                //test
                 SetViewModelDropDownBasedOnCookie(registerViewModel);                
                 return View("Register", registerViewModel); 
             }
@@ -182,12 +188,11 @@ namespace HeapProject.Controllers
             {
                 registerViewModel.PreferredLocaleList = cultureItems;
                 registerViewModel.TimeZoneList = timeZoneList;
-                //test
+
                 SetViewModelDropDownBasedOnCookie(registerViewModel);
                 // wrong - user could have overridden - in which case we want to leave as is - registerViewModel.PreferredLocaleList.FirstOrDefault(x => x.Value == uiCulture)?.Selected = true;
 
-                TempData["ErrorMessage"] = _stringLocalizer["FailedToRegisterNewUser"].Value;  //  "Failed to register a new user";
-
+                ViewData["ErrorMessage"] = _stringLocalizer["FailedToRegisterNewUser"].Value;  //  "Failed to register a new user";
                 return View("Register", registerViewModel);
             }
 
@@ -214,7 +219,7 @@ namespace HeapProject.Controllers
                 }
                 if (i == _requestLocalizationOptions.SupportedUICultures.Count - 1)
                 {
-                    ModelState.AddModelError(nameof(registerViewModel.SelectedPreferredLocaleId), "Invalid locale selected.");
+                    ModelState.AddModelError(nameof(registerViewModel.SelectedPreferredLocaleId), _stringLocalizer["InvalidLocaleSelected"].Value);
                     condition1Culture = false;
                 }
                 //model.PreferredLocaleList = cultureItems;
@@ -230,18 +235,14 @@ namespace HeapProject.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(nameof(registerViewModel.SelectedTimeZone), "Invalid timezone selected.");
+                    ModelState.AddModelError(nameof(registerViewModel.SelectedTimeZone), _stringLocalizer["InvalidTimezoneSelected"].Value);
                     condition2TimeZone = false;
                 }
             }
             catch (TimeZoneNotFoundException)
             {
-                ModelState.AddModelError(nameof(registerViewModel.SelectedTimeZone), "Invalid timezone selected.");
+                ModelState.AddModelError(nameof(registerViewModel.SelectedTimeZone), _stringLocalizer["InvalidTimezoneSelected"].Value);
                 condition2TimeZone = false;
-                // we should not try to update the user on this exception - maybe reintroduce conditions 1 and 2
-
-                //model.PreferredLocaleList = cultureItems;
-                //model.TimeZoneList = timeZoneList;                
             }
 
             try
@@ -253,7 +254,7 @@ namespace HeapProject.Controllers
                     // also remove cookies - ugly with multiple users of different locales using same program - not impossible
                     if(!result.Succeeded)
                     {
-                        var errors = result.Errors.Select(e => e.Description);
+                        var errors = result.Errors.Select(e => e.Description);      // not internationalized
                         foreach (var error in errors)
                         {
                             ModelState.AddModelError(string.Empty, error);
@@ -263,9 +264,14 @@ namespace HeapProject.Controllers
                         registerViewModel.TimeZoneList = timeZoneList;
                         
                         SetViewModelDropDownBasedOnCookie(registerViewModel);
-                        TempData["ErrorMessage"] = _stringLocalizer["FailedToRegisterNewUser"].Value;  //  "Failed to register a new user";
+                        ViewData["ErrorMessage"] = _stringLocalizer["FailedToRegisterNewUser"].Value;  //  "Failed to register a new user";
                         return View("Register", registerViewModel);     // BadRequest(new { Errors = errors });
                     }
+
+                    // force the new locale for the success message
+                    var newCultureInfo = new CultureInfo(applicationUser.PreferredLocale);
+                    CultureInfo.CurrentCulture = newCultureInfo;
+                    CultureInfo.CurrentUICulture = newCultureInfo;
 
                     TempData["SuccessMessage"] = _stringLocalizer["SuccessfullyRegisteredNewUser"].Value;
                     return RedirectToAction("Login", "Account");
@@ -282,7 +288,7 @@ namespace HeapProject.Controllers
                 registerViewModel.TimeZoneList = timeZoneList;
                 SetViewModelDropDownBasedOnCookie(registerViewModel);
 
-                TempData["ErrorMessage"] = _stringLocalizer["FailedToRegisterNewUser"].Value; 
+                ViewData["ErrorMessage"] = _stringLocalizer["FailedToRegisterNewUser"].Value; 
                 return View("Register", registerViewModel);
             }
         }

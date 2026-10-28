@@ -8,10 +8,10 @@ namespace HeapProject.Models
         [Display(Name = "SavedTime")]
         public string? SavedTimeString { get; set; }
 
-        [Display(Name = "Heap item")]
+        [Display(Name = "HeapItem")]
         public string? HeapItem { get; set; }
 
-        [Display(Name = "Heap item label")]
+        [Display(Name = "HeapItemLabel")]
         public required string HeapItemLabel { get; set; } = string.Empty;
     }
 }

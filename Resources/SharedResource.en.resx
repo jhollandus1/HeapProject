@@ -129,6 +129,9 @@
   <data name="FailedToRegisterNewUser" xml:space="preserve">
     <value>Failed to register a new user.</value>
   </data>
+  <data name="FailedToUpdateUserSettings" xml:space="preserve">
+    <value>Failed to update user settings.</value>
+  </data>
   <data name="FieldRequired" xml:space="preserve">
     <value>The field {0} is required.</value>
   </data>
@@ -138,6 +141,21 @@
   <data name="FirstNameCannotExceed100" xml:space="preserve">
     <value>{0} cannot exceed 100 characters.</value>
     <comment>The {0} field cannot be more than 100 characters long.</comment>
+  </data>
+  <data name="HeapItem" xml:space="preserve">
+    <value>Heap Item</value>
+  </data>
+  <data name="HeapItemLabel" xml:space="preserve">
+    <value>Heap Item Label</value>
+  </data>
+  <data name="InvalidLocaleSelected" xml:space="preserve">
+    <value>Invalid locale selected</value>
+  </data>
+  <data name="InvalidLoginAttempt" xml:space="preserve">
+    <value>Invalid login attempt</value>
+  </data>
+  <data name="InvalidTimezoneSelected" xml:space="preserve">
+    <value>Invalid time zone selected</value>
   </data>
   <data name="LastName" xml:space="preserve">
     <value>Last Name</value>
@@ -166,16 +184,25 @@
   <data name="SavedTime" xml:space="preserve">
     <value>Saved Time</value>
   </data>
+  <data name="SaveUserSettingsButton" xml:space="preserve">
+    <value>Save User Settings</value>
+  </data>
   <data name="SelectAnItem" xml:space="preserve">
     <value>-- Select an item --</value>
   </data>
   <data name="SuccessfullyRegisteredNewUser" xml:space="preserve">
     <value>Successfully registered a new user.</value>
   </data>
+  <data name="SuccessfullyUpdatedUserSettings" xml:space="preserve">
+    <value>Successfully updated user settings.</value>
+  </data>
   <data name="UserName" xml:space="preserve">
     <value>User Name</value>
   </data>
   <data name="UserNameBetween2And100Characters" xml:space="preserve">
     <value>{0} must be between 2 and 100 characters.</value>
+  </data>
+  <data name="UsernameNotFound" xml:space="preserve">
+    <value>Username not found:</value>
   </data>
 </root>

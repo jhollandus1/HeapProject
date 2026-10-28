@@ -1,4 +1,6 @@
 ﻿@model PreferencesViewModel
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> SharedLocalizer
 
 <form asp-controller="Preferences" asp-action="Index" method="post" class="form-inline">
     <!-- Validation summary is unused, since it is overkill with the _ErrorNotification partial -->
@@ -13,7 +15,9 @@
         <select asp-for="SelectedTimeZone" asp-items="Model.TimeZoneList" class="form-control form-select-sm"></select>
         <span asp-validation-for="SelectedTimeZone" class="text-danger"></span>
    </div>
-   <button type="submit" class="btn btn-primary mt-2">Save User Settings</button>
+   <button type="submit" class="btn btn-primary mt-2">
+       @SharedLocalizer["SaveUserSettingsButton"]
+   </button>
 </form>
 
 <br/>

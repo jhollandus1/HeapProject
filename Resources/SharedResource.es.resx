@@ -129,6 +129,9 @@
   <data name="FailedToRegisterNewUser" xml:space="preserve">
     <value>Falló en registrar un nuevo usuario.</value>
   </data>
+  <data name="FailedToUpdateUserSettings" xml:space="preserve">
+    <value>No se pudo actualizar la configuración del usuario.</value>
+  </data>
   <data name="FieldRequired" xml:space="preserve">
     <value>El campo {0} es necesario.</value>
   </data>
@@ -138,6 +141,21 @@
   <data name="FirstNameCannotExceed100" xml:space="preserve">
     <value>{0} no puede exceder 100 caracteres.</value>
     <comment>The {0} field cannot be more than 100 characters long.</comment>
+  </data>
+  <data name="HeapItem" xml:space="preserve">
+    <value>Elemento del montón</value>
+  </data>
+  <data name="HeapItemLabel" xml:space="preserve">
+    <value>Etiqueta de elemento del montón</value>
+  </data>
+  <data name="InvalidLocaleSelected" xml:space="preserve">
+    <value>Se ha seleccionado una configuración regional no válida</value>
+  </data>
+  <data name="InvalidLoginAttempt" xml:space="preserve">
+    <value>Intento de inicio de sesión no válido</value>
+  </data>
+  <data name="InvalidTimezoneSelected" xml:space="preserve">
+    <value>Se ha seleccionado una zona horaria no válida</value>
   </data>
   <data name="LastName" xml:space="preserve">
     <value>Apellido</value>
@@ -155,16 +173,19 @@
     <value>Las contraseñas no coinciden.</value>
   </data>
   <data name="PreferredLocale" xml:space="preserve">
-    <value>Preferente Locale</value>
+    <value>Configuración regional preferida</value>
   </data>
   <data name="PreferredTimeZone" xml:space="preserve">
-    <value>Preferente Zona horaria</value>
+    <value>Zona horaria preferida</value>
   </data>
   <data name="RegisterButton" xml:space="preserve">
     <value>Registro</value>
   </data>
   <data name="SavedTime" xml:space="preserve">
-    <value>Tiempo Ahorrado</value>
+    <value>Tiempo ahorrado</value>
+  </data>
+  <data name="SaveUserSettingsButton" xml:space="preserve">
+    <value>Guardar la configuración del usuario</value>
   </data>
   <data name="SelectAnItem" xml:space="preserve">
     <value>-- Seleccione un elemento --</value>
@@ -172,10 +193,16 @@
   <data name="SuccessfullyRegisteredNewUser" xml:space="preserve">
     <value>Sucesivamente registró un nuevo usuario.</value>
   </data>
+  <data name="SuccessfullyUpdatedUserSettings" xml:space="preserve">
+    <value>Se han actualizado correctamente los ajustes de usuario.</value>
+  </data>
   <data name="UserName" xml:space="preserve">
     <value>Nombre del usuario</value>
   </data>
   <data name="UserNameBetween2And100Characters" xml:space="preserve">
     <value>{0} debe ser entre 2 y 100 caracteres.</value>
+  </data>
+  <data name="UsernameNotFound" xml:space="preserve">
+    <value>Nombre de usuario no encontrado:</value>
   </data>
 </root>

@@ -129,6 +129,9 @@
   <data name="FailedToRegisterNewUser" xml:space="preserve">
     <value>Impossible d'enregistrer un nouvel utilisateur.</value>
   </data>
+  <data name="FailedToUpdateUserSettings" xml:space="preserve">
+    <value>Échec de la mise à jour des paramètres utilisateur.</value>
+  </data>
   <data name="FieldRequired" xml:space="preserve">
     <value>Le champ {0} est requis.</value>
   </data>
@@ -138,6 +141,21 @@
   <data name="FirstNameCannotExceed100" xml:space="preserve">
     <value>{0} ne peut dépasser 100 caractères.</value>
     <comment>The {0} field cannot be more than 100 characters long.</comment>
+  </data>
+  <data name="HeapItem" xml:space="preserve">
+    <value>Élément de tas</value>
+  </data>
+  <data name="HeapItemLabel" xml:space="preserve">
+    <value>Étiquette d'élément de tas</value>
+  </data>
+  <data name="InvalidLocaleSelected" xml:space="preserve">
+    <value>Paramètre régional non valide sélectionné</value>
+  </data>
+  <data name="InvalidLoginAttempt" xml:space="preserve">
+    <value>Tentative de connexion invalide</value>
+  </data>
+  <data name="InvalidTimezoneSelected" xml:space="preserve">
+    <value>Fuseau horaire sélectionné non valide</value>
   </data>
   <data name="LastName" xml:space="preserve">
     <value>Nom de famille</value>
@@ -155,16 +173,19 @@
     <value>Les mots de passe ne correspondent pas.</value>
   </data>
   <data name="PreferredLocale" xml:space="preserve">
-    <value>Locale préférée</value>
+    <value>Paramètres régionaux préférés</value>
   </data>
   <data name="PreferredTimeZone" xml:space="preserve">
-    <value>Zone horaire préférée</value>
+    <value>Fuseau horaire privilégié</value>
   </data>
   <data name="RegisterButton" xml:space="preserve">
     <value>Registre</value>
   </data>
   <data name="SavedTime" xml:space="preserve">
-    <value>Temps Enregistré</value>
+    <value>Temps enregistré</value>
+  </data>
+  <data name="SaveUserSettingsButton" xml:space="preserve">
+    <value>Enregistrer les paramètres utilisateur</value>
   </data>
   <data name="SelectAnItem" xml:space="preserve">
     <value>-- Sélectionner un élément --</value>
@@ -172,10 +193,16 @@
   <data name="SuccessfullyRegisteredNewUser" xml:space="preserve">
     <value>Enregistré avec succès un nouvel utilisateur.</value>
   </data>
+  <data name="SuccessfullyUpdatedUserSettings" xml:space="preserve">
+    <value>Paramètres utilisateur mis à jour avec succès.</value>
+  </data>
   <data name="UserName" xml:space="preserve">
     <value>Nom d' utilisateur</value>
   </data>
   <data name="UserNameBetween2And100Characters" xml:space="preserve">
     <value>{0} doit être entre 2 et 100 caractères.</value>
+  </data>
+  <data name="UsernameNotFound" xml:space="preserve">
+    <value>Nom d’utilisateur introuvable :</value>
   </data>
 </root>

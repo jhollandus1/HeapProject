@@ -2,9 +2,9 @@
 using HeapProject.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using System.Globalization;
 
@@ -15,11 +15,14 @@ namespace HeapProject.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RequestLocalizationOptions _requestLocalizationOptions;
+        private readonly IStringLocalizer<SharedResource> _stringLocalizer;
 
-        public PreferencesController(UserManager<ApplicationUser> userManager, IOptions<RequestLocalizationOptions> requestLocalizationOptions)
+
+        public PreferencesController(UserManager<ApplicationUser> userManager, IOptions<RequestLocalizationOptions> requestLocalizationOptions, IStringLocalizer<SharedResource> stringLocalizer)
         {
             _userManager = userManager;
             _requestLocalizationOptions = requestLocalizationOptions.Value;
+            _stringLocalizer = stringLocalizer;
         }
                
         [HttpGet]
@@ -28,7 +31,7 @@ namespace HeapProject.Controllers
             ApplicationUser? user = await _userManager.GetUserAsync(User);
             if(user == null)
             {
-                return NotFound("Username not found: " + User.Identity?.Name);
+                return NotFound(_stringLocalizer["UsernameNotFound"] + " " + User.Identity?.Name);
             }
             
             var cultureItems = _requestLocalizationOptions.SupportedUICultures
@@ -53,26 +56,24 @@ namespace HeapProject.Controllers
             ApplicationUser? user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound("Username not found: " + User.Identity?.Name);
+                return NotFound(_stringLocalizer["UsernameNotFound"] + " " + User.Identity?.Name);
             }
             
             var cultureItems = _requestLocalizationOptions.SupportedUICultures
-                                                        .Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName })
+                                                        .Select(c => new SelectListItem { Text = c.DisplayName, Value = c.Name })
                                                         .ToList();
 
             var timeZoneList = TimeZoneInfo.GetSystemTimeZones()
                                             .Select(tz => new SelectListItem { Text = tz.DisplayName, Value = tz.Id })
                                             .ToList();
 
-
             if (!ModelState.IsValid)
             {   
                 // this is needed to repopulate the lists           
                 model.PreferredLocaleList = cultureItems;
-                model.TimeZoneList = timeZoneList;   
-                
-                TempData["ErrorMessage"] = "Failed to update user settings.";
+                model.TimeZoneList = timeZoneList;
 
+                ViewData["ErrorMessage"] = _stringLocalizer["FailedToUpdateUserSettings"].Value;
                 return View(model);
             }
             
@@ -90,7 +91,7 @@ namespace HeapProject.Controllers
                 }
                 if (i == _requestLocalizationOptions.SupportedUICultures.Count - 1)
                 {
-                    ModelState.AddModelError(nameof(model.SelectedPreferredLocaleId), "Invalid locale selected.");
+                    ModelState.AddModelError(nameof(model.SelectedPreferredLocaleId), _stringLocalizer["InvalidLocaleSelected"].Value);
                     condition1Culture = false;
                 }
                 //model.PreferredLocaleList = cultureItems;
@@ -100,19 +101,19 @@ namespace HeapProject.Controllers
             try
             {
                 var timeZone = TimeZoneInfo.FindSystemTimeZoneById(model.SelectedTimeZone);
-                if (user != null && timeZone != null)
+                if (timeZone != null)
                 {
                     user.PreferredTimeZone = timeZone.Id;
                 }
                 else
                 {
-                    ModelState.AddModelError(nameof(model.SelectedTimeZone), "Invalid timezone selected.");
+                    ModelState.AddModelError(nameof(model.SelectedTimeZone), _stringLocalizer["InvalidTimezoneSelected"].Value);
                     condition2TimeZone = false;
                 }
             }
             catch (TimeZoneNotFoundException)
             {
-                ModelState.AddModelError(nameof(model.SelectedTimeZone), "Invalid timezone selected.");
+                ModelState.AddModelError(nameof(model.SelectedTimeZone), _stringLocalizer["InvalidTimezoneSelected"].Value);
                 condition2TimeZone = false;
                 // we should not try to update the user on this exception - maybe reintroduce conditions 1 and 2
                 
@@ -122,14 +123,32 @@ namespace HeapProject.Controllers
 
             try
             {
-                if (user != null && condition1Culture && condition2TimeZone)
+                if(condition1Culture && condition2TimeZone)
                 {
                     var result = await _userManager.UpdateAsync(user);
                     if(!result.Succeeded)
                     {
+                        var errors = result.Errors.Select(e => e.Description);      // not internationalized
+                        foreach (var error in errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error);
+                        }
+
+                        // this is needed to repopulate the lists - TODO: ensure place not lost - probably the same due to postback selected attribute being saved           
+                        model.PreferredLocaleList = cultureItems;
+                        model.TimeZoneList = timeZoneList;
+
                         // return to here
+                        ViewData["ErrorMessage"] = _stringLocalizer["FailedToUpdateUserSettings"].Value;
+                        return View(model);
                     }
-                    TempData["SuccessMessage"] = "Succesfully updated user settings.";  // TODO: internationalize
+
+                    // force the new locale for the success message
+                    var newCultureInfo = new CultureInfo(user.PreferredLocale);
+                    CultureInfo.CurrentCulture = newCultureInfo;
+                    CultureInfo.CurrentUICulture = newCultureInfo;
+
+                    TempData["SuccessMessage"] = _stringLocalizer["SuccessfullyUpdatedUserSettings"].Value; 
                     return RedirectToAction("Index", "Preferences");
                 }
                 else
@@ -143,7 +162,7 @@ namespace HeapProject.Controllers
                 model.PreferredLocaleList = cultureItems;
                 model.TimeZoneList = timeZoneList;
                 
-                TempData["ErrorMessage"] = "Failed to update user settings.";
+                ViewData["ErrorMessage"] = _stringLocalizer["FailedToUpdateUserSettings"].Value;
                 return View(model);
             }
         }
