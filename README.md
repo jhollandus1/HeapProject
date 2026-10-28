@@ -8,6 +8,6 @@ This has only been tested in FireFox.
 6. Register a new user
 7. Login
 8. Make a new heap label
-9. Add nodes to make a max heap, remove nodes, compute the sum of nodes.
+9. Add node(s) to make a max heap, remove node(s), compute the sum of node(s).
 
 10. [TODO]
