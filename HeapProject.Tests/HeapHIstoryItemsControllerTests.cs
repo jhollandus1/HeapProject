@@ -5,6 +5,13 @@ using Xunit;
 using Moq;
 using Moq.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using HeapProject.Identity;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Localization;
+using Castle.Core.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace HeapProject.Tests
 {
@@ -16,12 +23,28 @@ namespace HeapProject.Tests
             {                                                       // good enough
                 new HeapProject.Models.HeapHistoryItem { Id = 1, HeapItem = "", SavedTime = DateTime.Now, HeapItemLabel = string.Empty }
             };
-            var mockRepo = new Mock<HeapProjectContext>(new DbContextOptions<HeapProjectContext>());
+            var mockRepo1 = new Mock<HeapProjectContext>(new DbContextOptions<HeapProjectContext>());
+            
+            // problemms with only making first (storeMock) and not making any other sub-mock objects
+            var storeMock = new Mock<IUserStore<ApplicationUser>>();
+            var optionsMock = new Mock<IOptions<IdentityOptions>>();
+            var passwordHasherMock = new Mock<IPasswordHasher<ApplicationUser>>();
+            var userValidators = new List<IUserValidator<ApplicationUser>>(); // { new Mock<IUserValidator<ApplicationUser>>().Object };
+            var passwordValidators = new List<IPasswordValidator<ApplicationUser>>(); // { new Mock<IPasswordValidator<ApplicationUser>>().Object };
+            var keyNormalizerMock = new Mock<ILookupNormalizer>();
+            var errorsMock = new Mock<IdentityErrorDescriber>();
+            var servicesMock = new Mock<IServiceProvider>();
+            var loggerMock = new Mock<ILogger<UserManager<ApplicationUser>>>(); // <UserManager<ApplicationUser>>>();
+            var mockRepo2 = new Mock<UserManager<ApplicationUser>>(storeMock.Object, optionsMock.Object, passwordHasherMock.Object,
+                userValidators, passwordValidators, keyNormalizerMock.Object,
+                errorsMock.Object, servicesMock.Object, loggerMock.Object);
+            
+            var mockRepo3 = new Mock<IOptions<RequestLocalizationOptions>>();
+            var mockRepo4 = new Mock<IStringLocalizer<SharedResource>>();
 
-            // Need to do: Moqing the DbContextOptions? Moqing 
-            mockRepo.Setup(x => x.HeapHistoryItem).ReturnsDbSet(heapHistoryItemList);
+            mockRepo1.Setup(x => x.HeapHistoryItem).ReturnsDbSet(heapHistoryItemList);
 
-            var service = new HeapHistoryItemsController(mockRepo.Object);
+            var service = new HeapHistoryItemsController(mockRepo1.Object, mockRepo2.Object, mockRepo3.Object, mockRepo4.Object);
             
             return service;
         }
