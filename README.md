@@ -14,5 +14,6 @@ This has only been tested in FireFox.
 8. Click on "Create New" and add a heap item label and save.
 9. Click "Edit" next to the heap item label, add node(s) to make a max heap, remove node(s), compute the sum of node(s), and/or Add bulk array.
 10. Save to save the heap
+11. Can click "Details" to see the heap details, "Delete" to delete the item.
 
 Note: the application is not fully internationalized yet.
