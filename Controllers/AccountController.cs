@@ -6,7 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Reflection;
 
 namespace HeapProject.Controllers
 {
@@ -27,7 +30,12 @@ namespace HeapProject.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login() => View();
+        public async Task<IActionResult> Login()
+        {
+            LoginViewModel model = new LoginViewModel();
+            return View(model);
+        }
+
 
         [HttpGet]
         public IActionResult Index() => View();
@@ -35,8 +43,10 @@ namespace HeapProject.Controllers
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password, bool rememberMe)
-        {
-            if(ModelState.IsValid)
+        { 
+            LoginViewModel model = new LoginViewModel();
+            
+            if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(email);
                 
@@ -61,7 +71,34 @@ namespace HeapProject.Controllers
                     ViewData["ErrorMessage"] = _stringLocalizer["InvalidLoginAttempt"].Value;       // tested
                 }
             }
-            return View();
+            else
+            {
+                if (IsPropertyRequired(typeof(LoginViewModel), nameof(LoginViewModel.Email)) && email.IsNullOrEmpty())
+                {
+                    ModelState.ClearValidationState(nameof(model.Email));
+                    string localizedFieldName = _stringLocalizer["Email"].Value;
+                    string localizedErrorMessage = _stringLocalizer["FieldRequired", localizedFieldName].Value; // .Replace("{0}", localizedFieldName);
+                    ModelState.AddModelError(nameof(model.Email), localizedErrorMessage);
+                }
+                if (IsPropertyRequired(typeof(LoginViewModel), nameof(LoginViewModel.Password)) && password.IsNullOrEmpty())
+                {
+                    ModelState.ClearValidationState(nameof(model.Password));
+                    string localizedFieldName = _stringLocalizer["Password"].Value;
+                    string localizedErrorMessage = _stringLocalizer["FieldRequired", localizedFieldName].Value;
+                    ModelState.AddModelError(nameof(model.Password), localizedErrorMessage);
+                }
+            }
+            return View(model);
+        }
+
+        public static bool IsPropertyRequired(Type modelType, string propertyName)
+        {
+            PropertyInfo? property = modelType.GetProperty(propertyName);
+            if(property == null)
+            {
+                return false;
+            }
+            return Attribute.IsDefined(property, typeof(RequiredAttribute));
         }
 
         [HttpPost]
@@ -273,7 +310,22 @@ namespace HeapProject.Controllers
                     CultureInfo.CurrentCulture = newCultureInfo;
                     CultureInfo.CurrentUICulture = newCultureInfo;
 
+                    // this will only be a different RequestCulture if the user overrode the locale selection
+                    Response.Cookies.Append(
+                             CookieRequestCultureProvider.DefaultCookieName,
+                             CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(newCultureInfo)),
+                             new CookieOptions
+                             {
+                                 Expires = DateTimeOffset.UtcNow.AddYears(1),
+                                 HttpOnly = true,
+                                 Secure = true,
+                                 SameSite = SameSiteMode.Strict
+                             }
+                     );
+
                     TempData["SuccessMessage"] = _stringLocalizer["SuccessfullyRegisteredNewUser"].Value;
+
+
                     return RedirectToAction("Login", "Account");
                 }
                 else

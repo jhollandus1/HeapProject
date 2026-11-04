@@ -163,6 +163,12 @@
   <data name="LastNameCannotExceed100" xml:space="preserve">
     <value>{0} no puede exceder 100 caracteres.</value>
   </data>
+  <data name="LoginButton" xml:space="preserve">
+    <value>Acceso</value>
+  </data>
+  <data name="LoginPageTitle" xml:space="preserve">
+    <value>Acceso</value>
+  </data>
   <data name="Password" xml:space="preserve">
     <value>Contraseña</value>
   </data>
@@ -172,6 +178,9 @@
   <data name="PasswordsDoNotMatch" xml:space="preserve">
     <value>Las contraseñas no coinciden.</value>
   </data>
+  <data name="PleaseEnterAValidEmailAddress" xml:space="preserve">
+    <value>Por favor, introduce una dirección de correo electrónico válida.</value>
+  </data>
   <data name="PreferredLocale" xml:space="preserve">
     <value>Configuración regional preferida</value>
   </data>
@@ -180,6 +189,12 @@
   </data>
   <data name="RegisterButton" xml:space="preserve">
     <value>Registro</value>
+  </data>
+  <data name="RegisterPageTitle" xml:space="preserve">
+    <value>Registro</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>¿Acuérdate de mí?</value>
   </data>
   <data name="SavedTime" xml:space="preserve">
     <value>Tiempo ahorrado</value>
@@ -195,6 +210,9 @@
   </data>
   <data name="SuccessfullyUpdatedUserSettings" xml:space="preserve">
     <value>Se han actualizado correctamente los ajustes de usuario.</value>
+  </data>
+  <data name="UseALocalAccountToLogin" xml:space="preserve">
+    <value>Utiliza una cuenta local para iniciar sesión.</value>
   </data>
   <data name="UserName" xml:space="preserve">
     <value>Nombre del usuario</value>

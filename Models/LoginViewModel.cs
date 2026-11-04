@@ -1,18 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace HeapProject.Models
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-        public string Email { get; set; }
+        [EmailAddress(ErrorMessage = "PleaseEnterAValidEmailAddress")]        
+        [Required(ErrorMessage = "FieldRequired")]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Password is required")]
+        [Required(ErrorMessage = "FieldRequired")]
         [DataType(DataType.Password)]
-        public string Password { get; set; }
+        [Display(Name = "Password")]
+        public string Password { get; set; } = string.Empty;
 
-        [Display(Name = "Remember Me?")]
+        [Display(Name = "RememberMe")]
         public bool RememberMe { get; set; }
     }
 }

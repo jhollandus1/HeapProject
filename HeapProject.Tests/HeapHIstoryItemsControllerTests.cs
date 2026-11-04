@@ -35,9 +35,10 @@ namespace HeapProject.Tests
             var errorsMock = new Mock<IdentityErrorDescriber>();
             var servicesMock = new Mock<IServiceProvider>();
             var loggerMock = new Mock<ILogger<UserManager<ApplicationUser>>>(); // <UserManager<ApplicationUser>>>();
+
             var mockRepo2 = new Mock<UserManager<ApplicationUser>>(storeMock.Object, optionsMock.Object, passwordHasherMock.Object,
-                userValidators, passwordValidators, keyNormalizerMock.Object,
-                errorsMock.Object, servicesMock.Object, loggerMock.Object);
+                                                                        userValidators, passwordValidators, keyNormalizerMock.Object,
+                                                                        errorsMock.Object, servicesMock.Object, loggerMock.Object);
             
             var mockRepo3 = new Mock<IOptions<RequestLocalizationOptions>>();
             var mockRepo4 = new Mock<IStringLocalizer<SharedResource>>();

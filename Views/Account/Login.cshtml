@@ -1,24 +1,24 @@
 ﻿@model LoginViewModel
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> SharedLocalizer
 
-@using(Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-{
-    @Html.AntiForgeryToken()
-    <h4>Use a local account to log in.</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+@{
+    ViewData["Title"] = SharedLocalizer["LoginPageTitle"];
+}
+
+<form asp-action="Login" method="post">
+    <h4>@SharedLocalizer["UseALocalAccountToLogin"]</h4>
+    <hr />    
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group">
-        @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-        </div>
+        <label asp-for="Email" class="control-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-        </div>
+        <label asp-for="Password" class="control-label"></label>
+        <input asp-for="Password" class="form-control"/>
+        <span asp-validation-for="Password" class="text-danger"></span>
     </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
@@ -30,9 +30,12 @@
     </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Log in" class="btn btn-default" />
+            <button type="submit" class="btn btn-primary">
+                @SharedLocalizer["LoginButton"]
+            </button>            
         </div>
     </div>
-}
+</form>
+
 <partial name="_SuccessNotification" />
 <partial name="_ErrorNotification" />

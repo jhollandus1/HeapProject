@@ -59,7 +59,6 @@ builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new Microsoft.AspNetCore.Mvc.AutoValidateAntiforgeryTokenAttribute());
 })
-    .AddViewLocalization()  
     .AddDataAnnotationsLocalization(options =>
     {
         options.DataAnnotationLocalizerProvider = (type, factory) =>
@@ -80,10 +79,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
+app.UseRequestLocalization();
+
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseRequestLocalization();
 
 app.MapStaticAssets();
 
