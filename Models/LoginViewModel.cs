@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HeapProject.Models
 {
+    // Required attributes not working correctly in this file, so added validation in AccountController.cs
     public class LoginViewModel
     {
         [EmailAddress(ErrorMessage = "PleaseEnterAValidEmailAddress")]        

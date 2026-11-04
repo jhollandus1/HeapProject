@@ -1,6 +1,6 @@
 This has only been tested in FireFox.
 
-1. Clone the repository in Visual Studio
+1. Clone the repository in Visual Studio 
 2. Build
 3. From Package Manager Console, update the database
    
